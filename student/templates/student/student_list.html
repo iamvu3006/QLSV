@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Danh sách sinh viên{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Danh sách sinh viên</h2>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Tìm sinh viên..." value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-primary">🔍 Tìm</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Mã SV</th>
+            <th>Họ tên</th>
+            <th>Ngày sinh</th>
+            <th>Lớp</th>
+            <th>Email</th>
+            <th class="text-center">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sv in students %}
+        <tr>
+            <td>{{ sv.ma_sv }}</td>
+            <td>{{ sv.ho_ten }}</td>
+            <td>{{ sv.ngay_sinh }}</td>
+            <td>{{ sv.lop }}</td>
+            <td>{{ sv.email }}</td>
+            <td class="text-center">
+                <a href="{% url 'student_update' sv.pk %}" class="btn btn-sm btn-warning">✏ Sửa</a>
+                <a href="{% url 'student_delete' sv.pk %}" class="btn btn-sm btn-danger">🗑 Xóa</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="text-center text-muted">Chưa có sinh viên nào</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'student_create' %}" class="btn btn-primary">+ Thêm sinh viên</a>
+{% endblock %}

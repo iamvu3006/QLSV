@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Xóa sinh viên{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm p-4">
+    <h4 class="mb-3 text-danger">⚠ Xác nhận xóa</h4>
+    <p>Bạn có chắc chắn muốn xóa sinh viên <strong>{{ student.ho_ten }}</strong> không?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">🗑 Xóa</button>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
+{% endblock %}

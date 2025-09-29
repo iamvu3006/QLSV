@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Thông tin sinh viên</h2>
+<p><strong>Mã SV:</strong> {{ student.ma_sv }}</p>
+<p><strong>Họ tên:</strong> {{ student.ho_ten }}</p>
+<p><strong>Ngày sinh:</strong> {{ student.ngay_sinh }}</p>
+<p><strong>Lớp:</strong> {{ student.lop }}</p>
+<p><strong>Email:</strong> {{ student.email }}</p>
+
+<hr>
+<h3>Kết quả học tập</h3>
+<p>(sẽ thêm sau)</p>
+{% endblock %}
