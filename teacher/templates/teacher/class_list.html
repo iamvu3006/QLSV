@@ -1,0 +1,34 @@
+{% extends 'student/base.html' %}
+{% block title %}Danh sách lớp học{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Danh sách lớp phụ trách</h2>
+    <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Quay lại</a>
+</div>
+
+<div class="row">
+    {% for class_obj in classes %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ class_obj.ma_lop }}</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">{{ class_obj.ten_lop }}</h6>
+                    <p class="card-text">
+                        <strong>Số sinh viên:</strong> {{ class_obj.get_student_count }}<br>
+                        <strong>Năm học:</strong> {{ class_obj.nam_hoc }}
+                    </p>
+                    <a href="{% url 'teacher_class_detail' class_obj.pk %}" class="btn btn-sm btn-primary">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">Bạn chưa phụ trách lớp nào.</div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

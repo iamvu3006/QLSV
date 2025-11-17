@@ -1,0 +1,94 @@
+{% extends 'student/base.html' %}
+{% block title %}Nhập điểm hàng loạt{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Nhập điểm hàng loạt</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="bulkGradeForm">
+                    {% csrf_token %}
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <label class="form-label">{{ bulk_form.class_obj.label }}</label>
+                            {{ bulk_form.class_obj }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">{{ bulk_form.subject.label }}</label>
+                            {{ bulk_form.subject }}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">{{ bulk_form.hoc_ky.label }}</label>
+                            {{ bulk_form.hoc_ky }}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">{{ bulk_form.nam_hoc.label }}</label>
+                            {{ bulk_form.nam_hoc }}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-info d-block" onclick="loadStudents()">Tải danh sách</button>
+                        </div>
+                    </div>
+                    
+                    {{ formset.management_form }}
+                    <div id="gradeForms">
+                        {% for form in formset %}
+                            <div class="card mb-3 grade-form-row">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Sinh viên</label>
+                                            {{ form.student }}
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Điểm quá trình</label>
+                                            {{ form.diem_qua_trinh }}
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Điểm giữa kỳ</label>
+                                            {{ form.diem_giua_ky }}
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Điểm cuối kỳ</label>
+                                            {{ form.diem_cuoi_ky }}
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Ghi chú</label>
+                                            {{ form.ghi_chu }}
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label">Xóa</label>
+                                            {{ form.DELETE }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'grade_list' %}" class="btn btn-secondary">Hủy</a>
+                        <button type="submit" class="btn btn-success">Lưu tất cả</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadStudents() {
+    const classId = document.querySelector('#id_class_obj').value;
+    if (!classId) {
+        alert('Vui lòng chọn lớp học trước!');
+        return;
+    }
+    // Có thể thêm logic AJAX để tải danh sách sinh viên động
+}
+</script>
+{% endblock %}
+

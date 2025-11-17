@@ -1,14 +1,81 @@
-{% extends "base.html" %}
+{% extends 'student/base.html' %}
+{% block title %}Thông tin cá nhân{% endblock %}
 
 {% block content %}
-<h2>Thông tin sinh viên</h2>
-<p><strong>Mã SV:</strong> {{ student.ma_sv }}</p>
-<p><strong>Họ tên:</strong> {{ student.ho_ten }}</p>
-<p><strong>Ngày sinh:</strong> {{ student.ngay_sinh }}</p>
-<p><strong>Lớp:</strong> {{ student.lop }}</p>
-<p><strong>Email:</strong> {{ student.email }}</p>
-
-<hr>
-<h3>Kết quả học tập</h3>
-<p>(sẽ thêm sau)</p>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Thông tin cá nhân</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="Avatar" class="img-thumbnail mb-3" style="max-width: 200px;">
+                        {% else %}
+                            <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 200px; height: 200px;">
+                                <i class="fas fa-user fa-5x"></i>
+                            </div>
+                        {% endif %}
+                        <br>
+                        <a href="{% url 'student_profile_update' %}" class="btn btn-primary btn-sm">Cập nhật thông tin</a>
+                    </div>
+                    <div class="col-md-9">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th width="30%">Mã sinh viên:</th>
+                                <td>{{ student.ma_sv }}</td>
+                            </tr>
+                            <tr>
+                                <th>Họ và tên:</th>
+                                <td>{{ student.ho_ten }}</td>
+                            </tr>
+                            <tr>
+                                <th>Ngày sinh:</th>
+                                <td>{{ student.ngay_sinh|date:"d/m/Y" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Lớp:</th>
+                                <td>{{ student.lop }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>{{ student.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Số điện thoại:</th>
+                                <td>{{ profile.phone|default:"Chưa cập nhật" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Địa chỉ:</th>
+                                <td>{{ profile.address|default:"Chưa cập nhật" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Các lớp học</h5>
+            </div>
+            <div class="card-body">
+                {% if student.classes.all %}
+                    <ul class="list-group">
+                        {% for class_obj in student.classes.all %}
+                            <li class="list-group-item">
+                                <strong>{{ class_obj.ma_lop }}</strong> - {{ class_obj.ten_lop }}
+                                <span class="badge bg-secondary float-end">{{ class_obj.nam_hoc }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Chưa có lớp học nào.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

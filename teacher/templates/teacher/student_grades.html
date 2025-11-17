@@ -1,0 +1,58 @@
+{% extends 'student/base.html' %}
+{% block title %}Điểm số sinh viên{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h4 class="mb-0">Điểm số của {{ student.ho_ten }} ({{ student.ma_sv }})</h4>
+    </div>
+    <div class="card-body">
+        <p><strong>Email:</strong> {{ student.email }}</p>
+        <a href="{% url 'teacher_class_list' %}" class="btn btn-secondary">Quay lại</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Danh sách điểm số</h5>
+    </div>
+    <div class="card-body">
+        {% if grades %}
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Môn học</th>
+                        <th>Học kỳ</th>
+                        <th>Năm học</th>
+                        <th>Điểm quá trình</th>
+                        <th>Điểm giữa kỳ</th>
+                        <th>Điểm cuối kỳ</th>
+                        <th>Điểm tổng kết</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grade in grades %}
+                        <tr>
+                            <td>{{ grade.subject.ten_mon }}</td>
+                            <td>HK{{ grade.hoc_ky }}</td>
+                            <td>{{ grade.nam_hoc }}</td>
+                            <td>{{ grade.diem_qua_trinh|default:"-" }}</td>
+                            <td>{{ grade.diem_giua_ky|default:"-" }}</td>
+                            <td>{{ grade.diem_cuoi_ky|default:"-" }}</td>
+                            <td><strong>{{ grade.diem_tong_ket|default:"-" }}</strong></td>
+                            <td>
+                                <a href="{% url 'teacher_grade_update' grade.pk %}" class="btn btn-sm btn-warning">Sửa</a>
+                                <a href="{% url 'teacher_grade_delete' grade.pk %}" class="btn btn-sm btn-danger">Xóa</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info">Chưa có điểm số nào.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h2>Xin chào {{ student.ho_ten }}</h2>
+<p><b>Mã SV:</b> {{ student.ma_sv }}</p>
+<p><b>Lớp:</b> {{ student.lop }}</p>
+<p><b>Email:</b> {{ student.email }}</p>
+
+<a href="#" class="btn btn-info">Xem điểm</a>
+<a href="#" class="btn btn-secondary">Cập nhật thông tin</a>
+<br><br>
+<a href="{% url 'logout' %}" class="btn btn-danger">Đăng xuất</a>
+{% endblock %}

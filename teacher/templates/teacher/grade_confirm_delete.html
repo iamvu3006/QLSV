@@ -1,0 +1,25 @@
+{% extends 'student/base.html' %}
+{% block title %}Xóa điểm số{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Xác nhận xóa điểm số</h4>
+            </div>
+            <div class="card-body">
+                <p>Bạn có chắc chắn muốn xóa điểm của <strong>{{ grade.student.ho_ten }}</strong> - môn <strong>{{ grade.subject.ten_mon }}</strong>?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'teacher_student_grades' grade.student.pk %}" class="btn btn-secondary">Hủy</a>
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

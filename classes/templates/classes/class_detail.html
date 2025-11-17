@@ -1,0 +1,55 @@
+{% extends 'student/base.html' %}
+{% block title %}Chi tiết lớp học{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">{{ class_obj.ma_lop }} - {{ class_obj.ten_lop }}</h4>
+    </div>
+    <div class="card-body">
+        <p><strong>Giáo viên chủ nhiệm:</strong> {{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}</p>
+        <p><strong>Năm học:</strong> {{ class_obj.nam_hoc }}</p>
+        <p><strong>Số sinh viên:</strong> {{ class_obj.get_student_count }}</p>
+        <div class="mt-3">
+            <a href="{% url 'class_update' class_obj.pk %}" class="btn btn-warning">Sửa</a>
+            <a href="{% url 'class_add_student' class_obj.pk %}" class="btn btn-success">Thêm sinh viên</a>
+            <a href="{% url 'class_list' %}" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">Danh sách sinh viên</h5>
+    </div>
+    <div class="card-body">
+        {% if students %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã SV</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.ma_sv }}</td>
+                            <td>{{ student.ho_ten }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>
+                                <a href="{% url 'class_remove_student' class_obj.pk student.pk %}" class="btn btn-sm btn-danger">Xóa khỏi lớp</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">Chưa có sinh viên nào trong lớp.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
