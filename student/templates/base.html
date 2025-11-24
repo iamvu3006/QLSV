@@ -10,21 +10,82 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'student_list' %}">Quản lý sinh viên</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a href="{% url 'student_list' %}" class="nav-link">Danh sách</a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'student_create' %}" class="nav-link">+ Thêm sinh viên</a>
-                </li>
+        <a class="navbar-brand" href="{% url 'dashboard' %}">📚 QLSV</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                {% if user.is_authenticated %}
+                    {% if user.role == 'admin' or user.role == 'teacher' %}
+                        <li class="nav-item">
+                            <a href="{% url 'dashboard' %}" class="nav-link">📊 Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'student_list' %}" class="nav-link">👥 Sinh viên</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'class_list' %}" class="nav-link">🏫 Lớp học</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'subject_list' %}" class="nav-link">📚 Môn học</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'grade_list' %}" class="nav-link">📝 Điểm số</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if user.role == 'teacher' %}
+                        <li class="nav-item">
+                            <a href="{% url 'teacher_dashboard' %}" class="nav-link">👨‍🏫 Giảng dạy</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if user.role == 'student' %}
+                        <li class="nav-item">
+                            <a href="{% url 'student_dashboard' %}" class="nav-link">📊 Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'student_profile' %}" class="nav-link">👤 Hồ sơ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'student_grades' %}" class="nav-link">📝 Điểm số</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            👤 {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Thông tin cá nhân</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="nav-link">Đăng nhập</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
 </nav>
 
 <div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     {% block content %}{% endblock %}
 </div>
 

@@ -177,4 +177,3 @@ class StudentGPA(models.Model):
 
         gpa = round(total_points / total_credits, 2)
         return gpa, total_credits, total_points
-

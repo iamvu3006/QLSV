@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .forms import RegisterForm
 
 def login_view(request):
     if request.method == "POST":
@@ -10,7 +11,16 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect("dashboard")
+            
+            # Redirect dựa trên role
+            if user.role == 'admin':
+                return redirect("dashboard")
+            elif user.role == 'teacher':
+                return redirect("teacher_dashboard")
+            elif user.role == 'student':
+                return redirect("student_dashboard")
+            else:
+                return redirect("dashboard")
         else:
             messages.error(request, "Sai tên đăng nhập hoặc mật khẩu")
     return render(request, "accounts/login.html")
@@ -20,6 +30,7 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Đăng ký thành công! Vui lòng đăng nhập.")
             return redirect('login')
     else:
         form = RegisterForm()
@@ -28,18 +39,6 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect("login")
-
-@login_required
-def dashboard_view(request):
-    user = request.user
-    if user.groups.filter(name="Admin").exists():
-        return render(request, "accounts/dashboard_admin.html", {"user": user})
-    elif user.groups.filter(name="Student").exists():
-        student = getattr(user, "student", None)  # user liên kết Student
-        return render(request, "accounts/dashboard_student.html", {"user": user, "student": student})
-    else:
-        messages.error(request, "Tài khoản của bạn chưa được phân quyền")
-        return redirect("logout")
 
 @login_required
 def profile_view(request):
