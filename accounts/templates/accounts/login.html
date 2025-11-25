@@ -1,11 +1,82 @@
 {% extends 'accounts/base_login.html' %}
+{% block title %}Đăng nhập - QLSV{% endblock %}
+
 {% block content %}
-<h2>Đăng nhập</h2>
-<form method="post">
-  {% csrf_token %}
-  <input type="text" name="username" placeholder="Tên đăng nhập">
-  <input type="password" name="password" placeholder="Mật khẩu">
-  <button type="submit">Đăng nhập</button>
-  {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
-</form>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">📚 Đăng Nhập QLSV</h4>
+            </div>
+            <div class="card-body p-4">
+                <!-- Hiển thị messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Tên đăng nhập</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Nhập tên đăng nhập"
+                            required
+                            autofocus
+                        >
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Nhập mật khẩu"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            🔐 Đăng nhập
+                        </button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <small class="text-muted">
+                            Chưa có tài khoản? 
+                            <a href="{% url 'register' %}" class="text-decoration-none">Đăng ký ngay</a>
+                        </small>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center text-muted">
+                <small>© 2025 QLSV - Quản lý sinh viên</small>
+            </div>
+        </div>
+
+        <!-- Box thông tin demo -->
+        <div class="card mt-3 bg-light">
+            <div class="card-body">
+                <h6 class="card-title">🔑 Tài khoản demo:</h6>
+                <ul class="list-unstyled mb-0 small">
+                    <li><strong>Admin:</strong> admin / admin123</li>
+                    <li><strong>Giáo viên:</strong> teacher1 / teacher123</li>
+                    <li><strong>Sinh viên:</strong> student1 / student123</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

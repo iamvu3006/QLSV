@@ -1,7 +1,0 @@
-{% extends 'accounts/base_login.html' %}
-{% block content %}
-<h2>Trang cá nhân</h2>
-<p>Xin chào, {{ user.username }}!</p>
-<p>Vai trò: {{ user.role }}</p>
-<a href="{% url 'logout' %}">Đăng xuất</a>
-{% endblock %}

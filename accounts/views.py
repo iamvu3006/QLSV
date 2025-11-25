@@ -5,12 +5,26 @@ from django.contrib import messages
 from .forms import RegisterForm
 
 def login_view(request):
+    """View xử lý đăng nhập"""
+    # Nếu user đã login, redirect về dashboard
+    if request.user.is_authenticated:
+        if request.user.role == 'admin':
+            return redirect('dashboard')
+        elif request.user.role == 'teacher':
+            return redirect('teacher_dashboard')
+        elif request.user.role == 'student':
+            return redirect('student_dashboard')
+    
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        
+        # Authenticate user
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             login(request, user)
+            messages.success(request, f"Xin chào {user.username}!")
             
             # Redirect dựa trên role
             if user.role == 'admin':
@@ -20,26 +34,46 @@ def login_view(request):
             elif user.role == 'student':
                 return redirect("student_dashboard")
             else:
+                # Fallback nếu role không xác định
                 return redirect("dashboard")
         else:
-            messages.error(request, "Sai tên đăng nhập hoặc mật khẩu")
+            messages.error(request, "Sai tên đăng nhập hoặc mật khẩu!")
+    
     return render(request, "accounts/login.html")
 
+
 def register_view(request):
+    """View xử lý đăng ký"""
+    # Nếu đã login thì không cho đăng ký nữa
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Đăng ký thành công! Vui lòng đăng nhập.")
+            user = form.save()
+            messages.success(request, f"Đăng ký thành công! Hãy đăng nhập với tài khoản {user.username}")
             return redirect('login')
+        else:
+            # Hiển thị lỗi validation
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     else:
         form = RegisterForm()
+    
     return render(request, 'accounts/register.html', {'form': form})
 
+
 def logout_view(request):
+    """View xử lý đăng xuất"""
+    username = request.user.username
     logout(request)
+    messages.info(request, f"Đã đăng xuất {username}. Hẹn gặp lại!")
     return redirect("login")
+
 
 @login_required
 def profile_view(request):
-    return render(request, 'accounts/profile.html')
+    """View hiển thị profile user"""
+    return render(request, 'accounts/profile.html', {'user': request.user})

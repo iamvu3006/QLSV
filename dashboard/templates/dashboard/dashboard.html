@@ -1,4 +1,4 @@
-{% extends 'student/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Dashboard - Tổng quan{% endblock %}
 
 {% block content %}
@@ -210,7 +210,6 @@
 {{ grade_distribution|default:"{}"|json_script:"grade-dist-data" }}
 {{ classes_stats|default:"[]"|json_script:"classes-stats-data" }}
 <script>
-    // Biểu đồ phân bố điểm (lấy dữ liệu từ JSON script để tránh {{ }} trực tiếp trong JS)
     const rawGradeDist = JSON.parse(document.getElementById('grade-dist-data').textContent || '{}');
     const gradeDistData = {
         'A': Number(rawGradeDist["A (8.5-10)"] || 0),
