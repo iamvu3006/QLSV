@@ -1,0 +1,32 @@
+{% extends 'accounts/base_login.html' %}
+{% block title %}Xác nhận đăng xuất{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark text-center">
+                <h4 class="mb-0">⚠️ Xác nhận đăng xuất</h4>
+            </div>
+            <div class="card-body text-center p-4">
+                <p class="mb-3">Bạn có chắc chắn muốn đăng xuất?</p>
+                <p class="text-muted">
+                    Đang đăng nhập với: <strong>{{ user.username }}</strong>
+                    <br>
+                    <small>Vai trò: {{ user.get_role_display }}</small>
+                </p>
+                
+                <form method="post" action="{% url 'logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger me-2">
+                        ✅ Đăng xuất
+                    </button>
+                </form>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    ❌ Hủy
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

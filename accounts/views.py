@@ -66,11 +66,20 @@ def register_view(request):
 
 
 def logout_view(request):
-    """View xử lý đăng xuất"""
-    username = request.user.username
-    logout(request)
-    messages.info(request, f"Đã đăng xuất {username}. Hẹn gặp lại!")
-    return redirect("login")
+    """View xử lý đăng xuất - Hỗ trợ cả GET và POST"""
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            # POST request - thực hiện logout
+            username = request.user.username
+            logout(request)
+            messages.info(request, f"Đã đăng xuất {username}. Hẹn gặp lại!")
+            return redirect("login")
+        else:
+            # GET request - hiển thị trang xác nhận
+            return render(request, 'accounts/logout_confirm.html')
+    else:
+        # Chưa login thì redirect về login
+        return redirect("login")
 
 
 @login_required

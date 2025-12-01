@@ -90,7 +90,11 @@ def dashboard_view(request):
             avg_gpa = gpa_records.aggregate(Avg('gpa'))['gpa__avg']
             
             classes_stats.append({
-                'class': class_obj,
+                'class': {
+                    'id': class_obj.id,
+                    'ma_lop': class_obj.ma_lop,
+                    'ten_lop': class_obj.ten_lop,
+                },
                 'student_count': students_in_class.count(),
                 'avg_gpa': round(avg_gpa, 2) if avg_gpa else 0
             })
