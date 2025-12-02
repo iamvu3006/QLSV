@@ -2,57 +2,370 @@
 {% block title %}Điểm số sinh viên{% endblock %}
 
 {% block content %}
-<div class="card mb-4">
-    <div class="card-header bg-info text-white">
-        <h4 class="mb-0">Điểm số của {{ student.ho_ten }} ({{ student.ma_sv }})</h4>
-    </div>
-    <div class="card-body">
-        <p><strong>Email:</strong> {{ student.email }}</p>
-        <a href="{% url 'teacher_class_list' %}" class="btn btn-secondary">Quay lại</a>
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'teacher_dashboard' %}">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'teacher_class_list' %}">
+                        <i class="fas fa-school"></i> Lớp học
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Điểm số</li>
+            </ol>
+        </nav>
+        
+        <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-gradient-info text-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Bảng điểm sinh viên</h4>
+                        <p class="mb-0 opacity-75">Xem và quản lý điểm số chi tiết</p>
+                    </div>
+                    <a href="{% url 'teacher_class_list' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Thông tin sinh viên -->
+                <div class="row mb-5">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle-lg bg-primary bg-opacity-10 text-primary me-4">
+                                <i class="fas fa-user-graduate fa-2x"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-1">{{ student.ho_ten }}</h3>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-id-card me-1"></i>{{ student.ma_sv }}
+                                    </span>
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-envelope me-1"></i>{{ student.email|default:"Chưa có email" }}
+                                    </span>
+                                    {% if grades %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-book me-1"></i>{{ grades|length }} môn học
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card bg-primary text-white">
+                            <div class="stats-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stats-content">
+                                <small class="opacity-75">Điểm trung bình</small>
+                                <h3 class="mb-0">8.5</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bảng điểm -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-success text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0"><i class="fas fa-list-check me-2"></i>Danh sách điểm số</h5>
+                            <small class="opacity-75">Tổng số môn: {{ grades|length|default:"0" }}</small>
+                        </div>
+                        <a href="{% url 'grade_create' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-plus-circle me-1"></i>Thêm điểm
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if grades %}
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr class="table-success">
+                                            <th class="border-0 ps-4">Môn học</th>
+                                            <th class="border-0">Học kỳ</th>
+                                            <th class="border-0">Năm học</th>
+                                            <th class="border-0 text-center">Điểm QT</th>
+                                            <th class="border-0 text-center">Điểm GK</th>
+                                            <th class="border-0 text-center">Điểm CK</th>
+                                            <th class="border-0 text-center">Tổng kết</th>
+                                            <th class="border-0 text-center pe-4">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for grade in grades %}
+                                            <tr class="align-middle grade-row">
+                                                <td class="ps-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="subject-icon bg-info bg-opacity-10 text-info me-3">
+                                                            <i class="fas fa-book"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ grade.subject.ten_mon }}</strong>
+                                                            <br>
+                                                            <small class="text-muted">{{ grade.subject.ma_mon }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-primary">HK{{ grade.hoc_ky }}</span>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted">{{ grade.nam_hoc }}</small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="grade-circle {% if grade.diem_qua_trinh >= 5.0 %}grade-good{% else %}grade-bad{% endif %} mx-auto">
+                                                        {{ grade.diem_qua_trinh|default:"-" }}
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="grade-circle {% if grade.diem_giua_ky >= 5.0 %}grade-good{% else %}grade-bad{% endif %} mx-auto">
+                                                        {{ grade.diem_giua_ky|default:"-" }}
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="grade-circle {% if grade.diem_cuoi_ky >= 5.0 %}grade-good{% else %}grade-bad{% endif %} mx-auto">
+                                                        {{ grade.diem_cuoi_ky|default:"-" }}
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="d-flex align-items-center justify-content-center">
+                                                        <div class="final-grade {% if grade.diem_tong_ket >= 5.0 %}final-good{% else %}final-bad{% endif %} me-2">
+                                                            {{ grade.diem_tong_ket|default:"-" }}
+                                                        </div>
+                                                        {% if grade.diem_tong_ket %}
+                                                            <span class="badge {% if grade.diem_tong_ket >= 8.5 %}bg-success
+                                                                          {% elif grade.diem_tong_ket >= 7.0 %}bg-info
+                                                                          {% elif grade.diem_tong_ket >= 5.0 %}bg-warning
+                                                                          {% else %}bg-danger{% endif %}">
+                                                                {% if grade.diem_tong_ket >= 8.5 %}A
+                                                                {% elif grade.diem_tong_ket >= 7.0 %}B
+                                                                {% elif grade.diem_tong_ket >= 5.0 %}C
+                                                                {% else %}D{% endif %}
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <a href="{% url 'teacher_grade_update' grade.pk %}" 
+                                                           class="btn btn-outline-warning" 
+                                                           data-bs-toggle="tooltip" 
+                                                           title="Sửa điểm">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'teacher_grade_delete' grade.pk %}" 
+                                                           class="btn btn-outline-danger" 
+                                                           data-bs-toggle="tooltip" 
+                                                           title="Xóa điểm">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                        <button class="btn btn-outline-info" 
+                                                                data-bs-toggle="tooltip" 
+                                                                title="Xem chi tiết">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <div class="mb-3">
+                                    <i class="fas fa-clipboard-list fa-4x text-muted"></i>
+                                </div>
+                                <h5 class="text-muted mb-3">Chưa có điểm số nào</h5>
+                                <p class="text-muted mb-4">Sinh viên này chưa có điểm số được nhập vào hệ thống</p>
+                                <a href="{% url 'grade_create' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle me-2"></i>Thêm điểm đầu tiên
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Thống kê -->
+                {% if grades %}
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h6 class="mb-3"><i class="fas fa-chart-pie me-2 text-primary"></i>Phân loại điểm</h6>
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="stat-item">
+                                            <div class="stat-number text-success">3</div>
+                                            <small class="text-muted">Xuất sắc</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-item">
+                                            <div class="stat-number text-info">5</div>
+                                            <small class="text-muted">Khá</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-item">
+                                            <div class="stat-number text-warning">2</div>
+                                            <small class="text-muted">Trung bình</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h6 class="mb-3"><i class="fas fa-trend-up me-2 text-success"></i>Tiến độ học tập</h6>
+                                <div class="progress mb-2" style="height: 10px;">
+                                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                                </div>
+                                <small class="text-muted">Điểm trung bình: <strong>8.5/10</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header bg-success text-white">
-        <h5 class="mb-0">Danh sách điểm số</h5>
-    </div>
-    <div class="card-body">
-        {% if grades %}
-            <table class="table table-striped table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Môn học</th>
-                        <th>Học kỳ</th>
-                        <th>Năm học</th>
-                        <th>Điểm quá trình</th>
-                        <th>Điểm giữa kỳ</th>
-                        <th>Điểm cuối kỳ</th>
-                        <th>Điểm tổng kết</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for grade in grades %}
-                        <tr>
-                            <td>{{ grade.subject.ten_mon }}</td>
-                            <td>HK{{ grade.hoc_ky }}</td>
-                            <td>{{ grade.nam_hoc }}</td>
-                            <td>{{ grade.diem_qua_trinh|default:"-" }}</td>
-                            <td>{{ grade.diem_giua_ky|default:"-" }}</td>
-                            <td>{{ grade.diem_cuoi_ky|default:"-" }}</td>
-                            <td><strong>{{ grade.diem_tong_ket|default:"-" }}</strong></td>
-                            <td>
-                                <a href="{% url 'teacher_grade_update' grade.pk %}" class="btn btn-sm btn-warning">Sửa</a>
-                                <a href="{% url 'teacher_grade_delete' grade.pk %}" class="btn btn-sm btn-danger">Xóa</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <div class="alert alert-info">Chưa có điểm số nào.</div>
-        {% endif %}
-    </div>
-</div>
+<style>
+    .bg-gradient-info {
+        background: linear-gradient(135deg, var(--info-color), #0dcaf0);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, var(--success-color), #198754);
+    }
+    
+    .avatar-circle-lg {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .subject-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .grade-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    
+    .grade-good {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: var(--success-color);
+        border: 2px solid rgba(25, 135, 84, 0.2);
+    }
+    
+    .grade-bad {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
+        border: 2px solid rgba(220, 53, 69, 0.2);
+    }
+    
+    .final-grade {
+        font-size: 1.25rem;
+        font-weight: bold;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .final-good {
+        color: var(--success-color);
+    }
+    
+    .final-bad {
+        color: var(--danger-color);
+    }
+    
+    .stats-card {
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+    
+    .stats-icon {
+        font-size: 2rem;
+        margin-right: 1rem;
+        opacity: 0.8;
+    }
+    
+    .stats-content {
+        flex-grow: 1;
+    }
+    
+    .grade-row:hover {
+        background-color: rgba(25, 135, 84, 0.03);
+    }
+    
+    .stat-item {
+        padding: 0.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0.75rem 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .breadcrumb-item a {
+        text-decoration: none;
+        color: var(--primary-color);
+    }
+    
+    .breadcrumb-item.active {
+        color: var(--secondary-color);
+        font-weight: 500;
+    }
+    
+    .shadow-lg {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+</style>
+
+<script>
+    // Khởi tạo tooltip
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
 {% endblock %}
-

@@ -2,36 +2,159 @@
 {% block title %}Danh sách lớp học{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Danh sách lớp học</h2>
-    <a href="{% url 'class_create' %}" class="btn btn-primary">+ Thêm lớp học</a>
-</div>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="page-header mb-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h2 mb-2">Danh sách lớp học</h1>
+                <p class="text-muted">Quản lý tất cả các lớp học trong hệ thống</p>
+            </div>
+            <a href="{% url 'class_create' %}" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-plus-circle me-2"></i>Thêm lớp học
+            </a>
+        </div>
+    </div>
 
-<div class="row">
-    {% for class_obj in classes %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">{{ class_obj.ma_lop }}</h5>
+    <!-- Class Grid -->
+    {% if classes %}
+        <div class="row g-4">
+            {% for class_obj in classes %}
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="card class-card h-100 shadow-lg border-0 hover-lift">
+                        <div class="card-header bg-gradient-primary text-white py-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-white text-primary mb-2">MÃ LỚP</span>
+                                    <h4 class="mb-1">{{ class_obj.ma_lop }}</h4>
+                                    <h3 class="h5 mb-0">{{ class_obj.ten_lop }}</h3>
+                                </div>
+                                <div class="class-avatar">
+                                    <i class="fas fa-chalkboard"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="class-info mb-4">
+                                <div class="info-row mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-tie me-3 text-primary"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Giáo viên chủ nhiệm</small>
+                                            <span class="fw-medium">{{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="stat-card p-3 text-center rounded">
+                                            <div class="stat-number text-primary fw-bold fs-3">{{ class_obj.get_student_count }}</div>
+                                            <small class="text-muted">Sinh viên</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stat-card p-3 text-center rounded">
+                                            <div class="fw-bold fs-3">{{ class_obj.nam_hoc }}</div>
+                                            <small class="text-muted">Năm học</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between pt-3 border-top">
+                                <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Chi tiết
+                                </a>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'class_update' class_obj.pk %}" class="btn btn-outline-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'class_delete' class_obj.pk %}" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h6 class="card-title">{{ class_obj.ten_lop }}</h6>
-                    <p class="card-text">
-                        <strong>Giáo viên:</strong> {{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}<br>
-                        <strong>Số sinh viên:</strong> {{ class_obj.get_student_count }}<br>
-                        <strong>Năm học:</strong> {{ class_obj.nam_hoc }}
-                    </p>
-                    <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-sm btn-info">Xem chi tiết</a>
-                    <a href="{% url 'class_update' class_obj.pk %}" class="btn btn-sm btn-warning">Sửa</a>
-                    <a href="{% url 'class_delete' class_obj.pk %}" class="btn btn-sm btn-danger">Xóa</a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state-container">
+            <div class="text-center py-6">
+                <div class="empty-state-icon mb-4">
+                    <i class="fas fa-chalkboard-teacher fa-4x text-muted"></i>
                 </div>
+                <h3 class="h4 text-muted mb-3">Chưa có lớp học nào</h3>
+                <p class="text-muted mb-4">Bắt đầu bằng cách tạo lớp học đầu tiên của bạn</p>
+                <a href="{% url 'class_create' %}" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-plus-circle me-2"></i>Tạo lớp học đầu tiên
+                </a>
             </div>
         </div>
-    {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">Chưa có lớp học nào.</div>
-        </div>
-    {% endfor %}
+    {% endif %}
 </div>
-{% endblock %}
 
+<style>
+.class-card {
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.class-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.class-avatar {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: white;
+    border-color: #667eea;
+}
+
+.page-header {
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.empty-state-container {
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border: 2px dashed #dee2e6;
+}
+
+.hover-lift {
+    transition: transform 0.2s;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}

@@ -1,25 +1,95 @@
+<!-- class_remove_student.html -->
 {% extends 'base.html' %}
 {% block title %}Xóa sinh viên khỏi lớp{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0">Xác nhận xóa sinh viên</h4>
-            </div>
-            <div class="card-body">
-                <p>Bạn có chắc chắn muốn xóa sinh viên <strong>{{ student.ma_sv }} - {{ student.ho_ten }}</strong> khỏi lớp <strong>{{ class_obj.ten_lop }}</strong>?</p>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-secondary">Hủy</a>
-                        <button type="submit" class="btn btn-danger">Xóa</button>
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-danger text-white py-4 text-center">
+                    <div class="warning-icon mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x"></i>
                     </div>
-                </form>
+                    <h4 class="mb-0">Xác nhận xóa sinh viên</h4>
+                </div>
+                
+                <div class="card-body p-5">
+                    <div class="confirmation-content text-center">
+                        <div class="student-info mb-4 p-4 bg-light rounded">
+                            <div class="avatar-circle mx-auto mb-3">
+                                <span class="initials">{{ student.ho_ten|slice:":1" }}</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ student.ho_ten }}</h5>
+                            <p class="text-muted mb-2">{{ student.ma_sv }}</p>
+                            <span class="badge bg-info">{{ student.email }}</span>
+                        </div>
+                        
+                        <div class="alert alert-warning border-warning">
+                            <div class="d-flex">
+                                <i class="fas fa-exclamation-circle me-3 mt-1"></i>
+                                <div>
+                                    <p class="mb-0 fw-bold">Bạn đang xóa sinh viên khỏi lớp:</p>
+                                    <p class="mb-0 text-danger fw-bold">{{ class_obj.ten_lop }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-danger btn-lg py-3">
+                                    <i class="fas fa-trash me-2"></i>Xác nhận xóa
+                                </button>
+                                <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-outline-secondary btn-lg py-3">
+                                    <i class="fas fa-times me-2"></i>Hủy bỏ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.warning-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.btn-lg {
+    border-radius: 10px;
+    font-weight: 500;
+}
+</style>
+{% endblock %}

@@ -2,24 +2,99 @@
 {% block title %}Xóa môn học{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0">Xác nhận xóa môn học</h4>
-            </div>
-            <div class="card-body">
-                <p>Bạn có chắc chắn muốn xóa môn học <strong>{{ subject.ma_mon }} - {{ subject.ten_mon }}</strong>?</p>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{% url 'subject_list' %}" class="btn btn-secondary">Hủy</a>
-                        <button type="submit" class="btn btn-danger">Xóa</button>
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-danger text-white py-4 text-center">
+                    <div class="warning-icon mb-3">
+                        <i class="fas fa-trash-alt fa-3x"></i>
                     </div>
-                </form>
+                    <h4 class="mb-0">Xác nhận xóa môn học</h4>
+                </div>
+                
+                <div class="card-body p-5">
+                    <div class="confirmation-content text-center">
+                        <div class="subject-info mb-4 p-4 bg-gradient-primary text-white rounded">
+                            <div class="subject-icon mb-3">
+                                <i class="fas fa-book fa-2x"></i>
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ subject.ten_mon }}</h5>
+                            <p class="mb-2 opacity-75">{{ subject.ma_mon }}</p>
+                            <div class="subject-stats mt-3">
+                                <span class="badge bg-white text-primary">
+                                    <i class="fas fa-graduation-cap me-1"></i>{{ subject.so_tin_chi }} tín chỉ
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-danger border-danger">
+                            <div class="d-flex">
+                                <i class="fas fa-exclamation-triangle me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-2">Cảnh báo quan trọng!</h6>
+                                    <p class="mb-0">Tất cả điểm số liên quan đến môn học này sẽ bị xóa. Hành động này không thể hoàn tác.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-danger btn-lg py-3">
+                                    <i class="fas fa-trash-alt me-2"></i>Xóa vĩnh viễn
+                                </button>
+                                <a href="{% url 'subject_list' %}" class="btn btn-outline-secondary btn-lg py-3">
+                                    <i class="fas fa-times me-2"></i>Hủy bỏ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.warning-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subject-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.btn-lg {
+    border-radius: 10px;
+    font-weight: 500;
+}
+</style>
+{% endblock %}

@@ -3,46 +3,104 @@
 {% block title %}Danh sách sinh viên{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Danh sách sinh viên</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title">👥 Danh sách sinh viên</h2>
+    <a href="{% url 'student_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle me-2"></i>Thêm sinh viên
+    </a>
+</div>
 
-<form method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="q" class="form-control" placeholder="Tìm sinh viên..." value="{{ request.GET.q }}">
-        <button type="submit" class="btn btn-primary">🔍 Tìm</button>
+<div class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-search me-2"></i>Tìm kiếm sinh viên</h5>
+        <span class="badge bg-light text-primary">{{ students.count }} sinh viên</span>
     </div>
-</form>
+    <div class="card-body">
+        <form method="get" class="mb-4">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" name="q" class="form-control border-start-0" 
+                       placeholder="Tìm theo tên, mã số, email..." value="{{ request.GET.q }}">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="fas fa-search me-2"></i>Tìm
+                </button>
+            </div>
+        </form>
 
-<table class="table table-bordered table-striped shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>Mã SV</th>
-            <th>Họ tên</th>
-            <th>Ngày sinh</th>
-            <th>Lớp</th>
-            <th>Email</th>
-            <th class="text-center">Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for sv in students %}
-        <tr>
-            <td>{{ sv.ma_sv }}</td>
-            <td>{{ sv.ho_ten }}</td>
-            <td>{{ sv.ngay_sinh }}</td>
-            <td>{{ sv.lop }}</td>
-            <td>{{ sv.email }}</td>
-            <td class="text-center">
-                <a href="{% url 'student_update' sv.pk %}" class="btn btn-sm btn-warning">✏ Sửa</a>
-                <a href="{% url 'student_delete' sv.pk %}" class="btn btn-sm btn-danger">🗑 Xóa</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6" class="text-center text-muted">Chưa có sinh viên nào</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<a href="{% url 'student_create' %}" class="btn btn-primary">+ Thêm sinh viên</a>
+        {% if students %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 15%">Mã SV</th>
+                        <th style="width: 25%">Họ tên</th>
+                        <th style="width: 15%">Ngày sinh</th>
+                        <th style="width: 15%">Lớp</th>
+                        <th style="width: 20%">Email</th>
+                        <th style="width: 10%" class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sv in students %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-id-card me-1"></i>{{ sv.ma_sv }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" 
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>{{ sv.ho_ten }}</strong>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ sv.ngay_sinh|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-info">
+                                <i class="fas fa-school me-1"></i>{{ sv.lop }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="mailto:{{ sv.email }}" class="text-decoration-none">
+                                <i class="fas fa-envelope me-1 text-muted"></i>{{ sv.email }}
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'student_update' sv.pk %}" class="btn btn-outline-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'student_delete' sv.pk %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="mb-3">
+                <i class="fas fa-users fa-4x text-muted opacity-50"></i>
+            </div>
+            <h5 class="text-muted">Chưa có sinh viên nào</h5>
+            <p class="text-muted">Hãy thêm sinh viên đầu tiên vào hệ thống</p>
+            <a href="{% url 'student_create' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus-circle me-2"></i>Thêm sinh viên
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

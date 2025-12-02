@@ -3,14 +3,57 @@
 {% block title %}Xóa sinh viên{% endblock %}
 
 {% block content %}
-<div class="card shadow-sm p-4">
-    <h4 class="mb-3 text-danger">⚠ Xác nhận xóa</h4>
-    <p>Bạn có chắc chắn muốn xóa sinh viên <strong>{{ student.ho_ten }}</strong> không?</p>
-
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">🗑 Xóa</button>
-        <a href="{% url 'student_list' %}" class="btn btn-secondary">Hủy</a>
-    </form>
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-danger text-white text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-triangle fa-3x"></i>
+                </div>
+                <h4 class="mb-0">⚠ Xác nhận xóa</h4>
+            </div>
+            <div class="card-body p-5 text-center">
+                <div class="alert alert-danger bg-danger bg-opacity-10 border-danger">
+                    <h5 class="alert-heading mb-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>Cảnh báo hành động!
+                    </h5>
+                    <p class="mb-0">Bạn sắp xóa sinh viên <strong class="text-danger">{{ student.ho_ten }}</strong> ra khỏi hệ thống.</p>
+                </div>
+                
+                <div class="mb-4 p-3 bg-light rounded">
+                    <div class="d-flex justify-content-center mb-2">
+                        <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-user fa-lg"></i>
+                        </div>
+                    </div>
+                    <h5 class="mb-1">{{ student.ho_ten }}</h5>
+                    <p class="text-muted mb-1">
+                        <i class="fas fa-id-card me-1"></i>{{ student.ma_sv }}
+                    </p>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-school me-1"></i>{{ student.lop }}
+                    </p>
+                </div>
+                
+                <p class="text-muted mb-4">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến sinh viên này sẽ bị xóa vĩnh viễn.
+                </p>
+                
+                <form method="post" class="d-grid gap-3">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-times me-2"></i>Hủy bỏ
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="fas fa-trash-alt me-2"></i>Xác nhận xóa
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

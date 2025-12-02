@@ -4,88 +4,178 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <h2 class="mb-4">📊 Dashboard Tổng Quan</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">📊 Dashboard Tổng Quan</h2>
+                <p class="text-muted mb-0">Thống kê toàn hệ thống - Học kỳ {{ current_semester }} - {{ current_year }}</p>
+            </div>
+            <div>
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fs-6">
+                    <i class="fas fa-sync-alt me-2"></i>Cập nhật: {% now "H:i" %}
+                </span>
+            </div>
+        </div>
         
-        <!-- Bộ lọc học kỳ -->
-        <form method="get" class="card p-3 mb-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <label class="form-label">Học kỳ:</label>
-                    <select name="hoc_ky" class="form-select">
-                        {% for value, label in HOC_KY_CHOICES %}
-                            <option value="{{ value }}" {% if current_semester == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Năm học:</label>
-                    <input type="text" name="nam_hoc" class="form-control" value="{{ current_year }}">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary d-block w-100">🔍 Xem thống kê</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Thống kê tổng quan -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <h5 class="card-title">👥 Sinh viên</h5>
-                <h2 class="display-4">{{ total_students }}</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <h5 class="card-title">🏫 Lớp học</h5>
-                <h2 class="display-4">{{ total_classes }}</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-info">
-            <div class="card-body">
-                <h5 class="card-title">📚 Môn học</h5>
-                <h2 class="display-4">{{ total_subjects }}</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <h5 class="card-title">👨‍🏫 Giáo viên</h5>
-                <h2 class="display-4">{{ total_teachers }}</h2>
+        <!-- Semester Filter -->
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-filter me-2 text-primary"></i>Bộ lọc thống kê
+                </h5>
+                <form method="get">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Học kỳ:</label>
+                            <select name="hoc_ky" class="form-select form-select-lg border-primary border-2">
+                                {% for value, label in HOC_KY_CHOICES %}
+                                    <option value="{{ value }}" {% if current_semester == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Năm học:</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-primary text-white border-primary">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                                <input type="text" name="nam_hoc" class="form-control border-primary border-2" 
+                                       value="{{ current_year }}" placeholder="VD: 2023-2024">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
+                                <i class="fas fa-chart-bar me-2"></i>🔍 Xem thống kê
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Thống kê học kỳ hiện tại -->
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">📈 Thống kê học kỳ {{ current_semester }} - {{ current_year }}</h5>
+<!-- Overview Statistics - Version với chữ đen -->
+<div class="row mb-4 g-3">
+    <div class="col-md-3">
+        <div class="card border-0 rounded-4 shadow-lg h-100 hover-lift" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-2 text-primary">👥 Sinh viên</h5>
+                        <h2 class="display-4 fw-bold text-dark">{{ total_students }}</h2>
+                    </div>
+                    <div class="avatar-circle bg-primary bg-opacity-10">
+                        <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                    </div>
+                </div>
+                <p class="mb-0 text-muted">Tổng số sinh viên trong hệ thống</p>
             </div>
-            <div class="card-body">
-                <div class="row text-center">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 rounded-4 shadow-lg h-100 hover-lift" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-2 text-success">🏫 Lớp học</h5>
+                        <h2 class="display-4 fw-bold text-dark">{{ total_classes }}</h2>
+                    </div>
+                    <div class="avatar-circle bg-success bg-opacity-10">
+                        <i class="fas fa-school fa-2x text-success"></i>
+                    </div>
+                </div>
+                <p class="mb-0 text-muted">Lớp học đang hoạt động</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 rounded-4 shadow-lg h-100 hover-lift" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-2 text-info">📚 Môn học</h5>
+                        <h2 class="display-4 fw-bold text-dark">{{ total_subjects }}</h2>
+                    </div>
+                    <div class="avatar-circle bg-info bg-opacity-10">
+                        <i class="fas fa-book-open fa-2x text-info"></i>
+                    </div>
+                </div>
+                <p class="mb-0 text-muted">Môn học được giảng dạy</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 rounded-4 shadow-lg h-100 hover-lift" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-2 text-warning">👨‍🏫 Giáo viên</h5>
+                        <h2 class="display-4 fw-bold text-dark">{{ total_teachers }}</h2>
+                    </div>
+                    <div class="avatar-circle bg-warning bg-opacity-10">
+                        <i class="fas fa-chalkboard-teacher fa-2x text-warning"></i>
+                    </div>
+                </div>
+                <p class="mb-0 text-muted">Giáo viên đang giảng dạy</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Current Semester Stats -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 rounded-4 shadow-sm">
+            <div class="card-header bg-dark bg-gradient text-white py-3 rounded-top-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-chart-pie me-2"></i>📈 Thống kê học kỳ {{ current_semester }} - {{ current_year }}
+                    </h5>
+                    <span class="badge bg-white text-dark rounded-pill px-3 py-1 fs-6">
+                        Tỷ lệ đạt: {% widthratio passed_count total_students 100 %}%
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row text-center g-4">
                     <div class="col-md-4">
-                        <h3 class="text-primary">{{ average_grade }}</h3>
-                        <p class="text-muted">Điểm trung bình chung</p>
+                        <div class="p-4 bg-light rounded-4">
+                            <div class="mb-3">
+                                <i class="fas fa-calculator fa-3x text-primary opacity-75"></i>
+                            </div>
+                            <h3 class="fw-bold text-primary">{{ average_grade }}</h3>
+                            <p class="text-muted mb-0">Điểm trung bình chung</p>
+                            <div class="progress mt-3" style="height: 6px;">
+                                <div class="progress-bar bg-primary" 
+                                     style="width: {% widthratio average_grade 10 100 %}%"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-4">
-                        <h3 class="text-success">{{ passed_count }}</h3>
-                        <p class="text-muted">Sinh viên đạt (≥ 5.0)</p>
+                        <div class="p-4 bg-light rounded-4">
+                            <div class="mb-3">
+                                <i class="fas fa-check-circle fa-3x text-success opacity-75"></i>
+                            </div>
+                            <h3 class="fw-bold text-success">{{ passed_count }}</h3>
+                            <p class="text-muted mb-0">Sinh viên đạt (≥ 5.0)</p>
+                            <div class="progress mt-3" style="height: 6px;">
+                                <div class="progress-bar bg-success" 
+                                     style="width: {% widthratio passed_count total_students 100 %}%"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-4">
-                        <h3 class="text-danger">{{ failed_count }}</h3>
-                        <p class="text-muted">Sinh viên chưa đạt (< 5.0)</p>
+                        <div class="p-4 bg-light rounded-4">
+                            <div class="mb-3">
+                                <i class="fas fa-times-circle fa-3x text-danger opacity-75"></i>
+                            </div>
+                            <h3 class="fw-bold text-danger">{{ failed_count }}</h3>
+                            <p class="text-muted mb-0">Sinh viên chưa đạt (< 5.0)</p>
+                            <div class="progress mt-3" style="height: 6px;">
+                                <div class="progress-bar bg-danger" 
+                                     style="width: {% widthratio failed_count total_students 100 %}%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -93,112 +183,218 @@
     </div>
 </div>
 
-<!-- Biểu đồ phân bố điểm -->
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">📊 Phân bố điểm</h5>
+<!-- Charts and Top Students -->
+<div class="row mb-4 g-3">
+    <div class="col-lg-6">
+        <div class="card border-0 rounded-4 shadow-sm h-100">
+            <div class="card-header bg-info bg-gradient text-white py-3 rounded-top-4">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-chart-bar me-2"></i>📊 Phân bố điểm
+                </h5>
             </div>
-            <div class="card-body">
-                <canvas id="gradeDistributionChart"></canvas>
+            <div class="card-body p-4">
+                <div class="chart-container" style="position: relative; height: 300px;">
+                    <canvas id="gradeDistributionChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Top 5 sinh viên -->
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">🏆 Top 5 sinh viên GPA cao nhất</h5>
+    <div class="col-lg-6">
+        <div class="card border-0 rounded-4 shadow-sm h-100">
+            <div class="card-header bg-success bg-gradient text-white py-3 rounded-top-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-trophy me-2"></i>🏆 Top 5 sinh viên
+                    </h5>
+                    <span class="badge bg-white text-success rounded-pill px-3 py-1">
+                        GPA cao nhất
+                    </span>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 {% if top_students %}
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Mã SV</th>
-                                <th>Họ tên</th>
-                                <th>GPA</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for gpa_record in top_students %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ gpa_record.student.ma_sv }}</td>
-                                    <td>{{ gpa_record.student.ho_ten }}</td>
-                                    <td><strong>{{ gpa_record.gpa }}</strong></td>
+                                    <th class="text-center" style="width: 50px;">#</th>
+                                    <th>Sinh viên</th>
+                                    <th class="text-center">GPA</th>
+                                    <th class="text-center">Xếp hạng</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {% for gpa_record in top_students %}
+                                    <tr class="transition-all">
+                                        <td class="text-center">
+                                            {% if forloop.counter == 1 %}
+                                                <span class="badge bg-warning text-dark rounded-circle p-2">🥇</span>
+                                            {% elif forloop.counter == 2 %}
+                                                <span class="badge bg-secondary text-white rounded-circle p-2">🥈</span>
+                                            {% elif forloop.counter == 3 %}
+                                                <span class="badge bg-danger text-white rounded-circle p-2">🥉</span>
+                                            {% else %}
+                                                <span class="fw-bold text-muted">#{{ forloop.counter }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle bg-primary bg-opacity-10 text-primary me-3">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">{{ gpa_record.student.ho_ten }}</h6>
+                                                    <small class="text-muted">{{ gpa_record.student.ma_sv }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="fw-bold fs-4 text-success">{{ gpa_record.gpa }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge rounded-pill px-3 py-2 fs-6 
+                                                {% if gpa_record.gpa >= 8.5 %}bg-success
+                                                {% elif gpa_record.gpa >= 7.0 %}bg-primary
+                                                {% elif gpa_record.gpa >= 5.5 %}bg-warning
+                                                {% else %}bg-secondary{% endif %}">
+                                                {% if gpa_record.gpa >= 8.5 %}Xuất sắc
+                                                {% elif gpa_record.gpa >= 7.0 %}Giỏi
+                                                {% elif gpa_record.gpa >= 5.5 %}Khá
+                                                {% else %}Trung bình{% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 {% else %}
-                    <p class="text-muted">Chưa có dữ liệu GPA.</p>
+                    <div class="text-center py-5">
+                        <i class="fas fa-trophy fa-3x text-muted opacity-25 mb-3"></i>
+                        <p class="text-muted">Chưa có dữ liệu GPA</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
 
-<!-- Thống kê theo môn học -->
+<!-- Subject Statistics -->
 <div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0">📚 Thống kê theo môn học</h5>
+    <div class="col-12">
+        <div class="card border-0 rounded-4 shadow-sm">
+            <div class="card-header bg-warning bg-gradient text-dark py-3 rounded-top-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-book me-2"></i>📚 Thống kê theo môn học
+                    </h5>
+                    <span class="badge bg-dark text-white rounded-pill px-3 py-1">
+                        {{ subjects_stats|length }} môn học
+                    </span>
+                </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 {% if subjects_stats %}
-                    <table class="table table-bordered table-striped">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Mã môn</th>
-                                <th>Tên môn học</th>
-                                <th>Điểm TB</th>
-                                <th>Đạt</th>
-                                <th>Không đạt</th>
-                                <th>Tổng SV</th>
-                                <th>Tỉ lệ đạt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for stat in subjects_stats %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <td>{{ stat.subject.ma_mon }}</td>
-                                    <td>{{ stat.subject.ten_mon }}</td>
-                                    <td><strong>{{ stat.avg_score }}</strong></td>
-                                    <td class="text-success">{{ stat.passed }}</td>
-                                    <td class="text-danger">{{ stat.failed }}</td>
-                                    <td>{{ stat.total }}</td>
-                                    <td>
-                                        {% widthratio stat.passed stat.total 100 %}%
-                                    </td>
+                                    <th class="py-3 ps-4">Môn học</th>
+                                    <th class="text-center py-3">Điểm TB</th>
+                                    <th class="text-center py-3">Tổng SV</th>
+                                    <th class="text-center py-3">Đạt</th>
+                                    <th class="text-center py-3">Không đạt</th>
+                                    <th class="text-center py-3 pe-4">Tỉ lệ đạt</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {% for stat in subjects_stats %}
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="subject-icon bg-primary bg-opacity-10 text-primary rounded-3 p-2 me-3">
+                                                    <i class="fas fa-book fa-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">{{ stat.subject.ten_mon }}</h6>
+                                                    <small class="text-muted">{{ stat.subject.ma_mon }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="fw-bold fs-5 
+                                                {% if stat.avg_score >= 8.5 %}text-success
+                                                {% elif stat.avg_score >= 7.0 %}text-primary
+                                                {% elif stat.avg_score >= 5.0 %}text-warning
+                                                {% else %}text-danger{% endif %}">
+                                                {{ stat.avg_score }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill px-3 py-1">
+                                                {{ stat.total }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">
+                                                {{ stat.passed }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">
+                                                {{ stat.failed }}
+                                            </span>
+                                        </td>
+                                        <td class="pe-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-3" style="height: 8px;">
+                                                    <div class="progress-bar 
+                                                        {% if stat.passed_ratio >= 80 %}bg-success
+                                                        {% elif stat.passed_ratio >= 60 %}bg-info
+                                                        {% elif stat.passed_ratio >= 40 %}bg-warning
+                                                        {% else %}bg-danger{% endif %}" 
+                                                        style="width: {{ stat.passed_ratio }}%">
+                                                    </div>
+                                                </div>
+                                                <span class="fw-bold">{{ stat.passed_ratio|floatformat:0 }}%</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 {% else %}
-                    <p class="text-muted">Chưa có dữ liệu điểm số.</p>
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-3x text-muted opacity-25 mb-3"></i>
+                        <p class="text-muted">Chưa có dữ liệu điểm số</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
 
-<!-- Thống kê theo lớp -->
+<!-- Class Statistics -->
 <div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">🏫 Thống kê theo lớp</h5>
+    <div class="col-12">
+        <div class="card border-0 rounded-4 shadow-sm">
+            <div class="card-header bg-primary bg-gradient text-white py-3 rounded-top-4">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-chart-line me-2"></i>🏫 Thống kê GPA theo lớp
+                </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 {% if classes_stats %}
-                    <canvas id="classGPAChart"></canvas>
+                    <div class="chart-container" style="position: relative; height: 400px;">
+                        <canvas id="classGPAChart"></canvas>
+                    </div>
                 {% else %}
-                    <p class="text-muted">Chưa có dữ liệu lớp học.</p>
+                    <div class="text-center py-5">
+                        <i class="fas fa-school fa-3x text-muted opacity-25 mb-3"></i>
+                        <p class="text-muted">Chưa có dữ liệu lớp học</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -237,19 +433,47 @@
                         gradeDistData.F
                     ],
                     backgroundColor: [
-                        'rgba(40, 167, 69, 0.7)',
-                        'rgba(0, 123, 255, 0.7)',
-                        'rgba(255, 193, 7, 0.7)',
-                        'rgba(255, 152, 0, 0.7)',
-                        'rgba(220, 53, 69, 0.7)'
-                    ]
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(0, 123, 255, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(255, 152, 0, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(255, 152, 0, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        cornerRadius: 6
+                    }
+                },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }
@@ -274,20 +498,77 @@
                 datasets: [{
                     label: 'GPA trung bình',
                     data: classGPAs,
-                    backgroundColor: 'rgba(0, 123, 255, 0.7)'
+                    backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6
                 }]
             },
             options: {
                 indexAxis: 'y',
                 responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `GPA: ${context.parsed.x.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         beginAtZero: true,
-                        max: 4.0
+                        max: 4.0,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }
         });
     }
 </script>
+
+<style>
+    .avatar-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    .subject-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+    }
+    
+    .transition-all {
+        transition: all 0.2s ease;
+    }
+    
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+</style>
 {% endblock %}

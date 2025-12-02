@@ -2,44 +2,327 @@
 {% block title %}Cập nhật thông tin{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
+<div class="row justify-content-center">
+    <div class="col-xl-8 col-lg-10">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Cập nhật thông tin cá nhân</h4>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        Cập nhật thông tin cá nhân
+                    </h4>
+                    <span class="badge bg-light text-primary">
+                        <i class="fas fa-user me-1"></i>{{ student.ho_ten }}
+                    </span>
+                </div>
             </div>
+            
             <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="{{ form.phone.id_for_label }}" class="form-label">Số điện thoại</label>
-                        {{ form.phone }}
-                        {% if form.phone.errors %}
-                            <div class="text-danger">{{ form.phone.errors }}</div>
-                        {% endif %}
+                <div class="row">
+                    <!-- Avatar Preview -->
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="text-center">
+                            <div class="position-relative d-inline-block mb-4">
+                                {% if profile.avatar %}
+                                    <img id="avatar-preview" src="{{ profile.avatar.url }}" 
+                                         alt="Avatar" class="img-thumbnail rounded-circle border-3 border-primary"
+                                         style="width: 200px; height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div id="avatar-preview" class="avatar-circle">
+                                        <i class="fas fa-user fa-3x"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="position-absolute bottom-0 end-0 translate-middle">
+                                    <label for="{{ form.avatar.id_for_label }}" class="btn btn-warning btn-sm rounded-circle shadow-sm cursor-pointer">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-light p-3 rounded">
+                                <h6 class="mb-2">
+                                    <i class="fas fa-info-circle text-primary me-2"></i>
+                                    Hướng dẫn
+                                </h6>
+                                <ul class="list-unstyled text-start small text-muted">
+                                    <li class="mb-1">
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        Cập nhật thông tin liên hệ
+                                    </li>
+                                    <li class="mb-1">
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        Tải ảnh đại diện mới
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        Lưu thay đổi khi hoàn tất
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="{{ form.address.id_for_label }}" class="form-label">Địa chỉ</label>
-                        {{ form.address }}
-                        {% if form.address.errors %}
-                            <div class="text-danger">{{ form.address.errors }}</div>
-                        {% endif %}
+                    
+                    <!-- Form Fields -->
+                    <div class="col-lg-8">
+                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Hidden avatar input -->
+                            <input type="file" name="avatar" id="{{ form.avatar.id_for_label }}" 
+                                   class="form-control d-none" accept="image/*">
+                            
+                            <div class="row g-3">
+                                <!-- Phone Field -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.phone.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-phone text-primary me-2"></i>
+                                            Số điện thoại
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0">
+                                                <i class="fas fa-mobile-alt text-muted"></i>
+                                            </span>
+                                            {{ form.phone }}
+                                        </div>
+                                        {% if form.phone.errors %}
+                                        <div class="text-danger small mt-2">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            {{ form.phone.errors }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-text text-muted mt-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Nhập số điện thoại liên hệ của bạn
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Address Field -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="{{ form.address.id_for_label }}" class="form-label fw-semibold">
+                                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                            Địa chỉ
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0">
+                                                <i class="fas fa-home text-muted"></i>
+                                            </span>
+                                            {{ form.address }}
+                                        </div>
+                                        {% if form.address.errors %}
+                                        <div class="text-danger small mt-2">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            {{ form.address.errors }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-text text-muted mt-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Địa chỉ liên hệ hiện tại
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Avatar Upload -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label fw-semibold">
+                                            <i class="fas fa-image text-primary me-2"></i>
+                                            Ảnh đại diện
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0">
+                                                <i class="fas fa-upload text-muted"></i>
+                                            </span>
+                                            <input type="text" class="form-control" id="avatar-file-name" 
+                                                   placeholder="Chưa chọn file ảnh" readonly>
+                                            <button type="button" class="btn btn-outline-primary" 
+                                                    onclick="document.getElementById('{{ form.avatar.id_for_label }}').click()">
+                                                <i class="fas fa-folder-open me-2"></i>Chọn ảnh
+                                            </button>
+                                        </div>
+                                        {% if form.avatar.errors %}
+                                        <div class="text-danger small mt-2">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            {{ form.avatar.errors }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-text text-muted mt-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Chọn file ảnh với định dạng JPG, PNG (tối đa 5MB)
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Current Info -->
+                                <div class="col-md-12">
+                                    <div class="bg-light p-3 rounded mt-3">
+                                        <h6 class="mb-3">
+                                            <i class="fas fa-user-check text-primary me-2"></i>
+                                            Thông tin hiện tại
+                                        </h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Mã sinh viên</small>
+                                                <strong>{{ student.ma_sv }}</strong>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Họ và tên</small>
+                                                <strong>{{ student.ho_ten }}</strong>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Email</small>
+                                                <strong>{{ student.email }}</strong>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted d-block">Lớp</small>
+                                                <strong>{{ student.lop }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Form Actions -->
+                                <div class="col-md-12 mt-4 pt-3 border-top">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="{% url 'student_profile' %}" class="btn btn-outline-secondary px-4">
+                                            <i class="fas fa-times me-2"></i>Hủy bỏ
+                                        </a>
+                                        
+                                        <div class="d-flex gap-3">
+                                            <button type="reset" class="btn btn-outline-warning">
+                                                <i class="fas fa-redo me-2"></i>Đặt lại
+                                            </button>
+                                            <button type="submit" class="btn btn-primary px-4">
+                                                <i class="fas fa-save me-2"></i>Lưu thay đổi
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="mb-3">
-                        <label for="{{ form.avatar.id_for_label }}" class="form-label">Ảnh đại diện</label>
-                        {{ form.avatar }}
-                        {% if form.avatar.errors %}
-                            <div class="text-danger">{{ form.avatar.errors }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{% url 'student_profile' %}" class="btn btn-secondary">Hủy</a>
-                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<script>
+    // Preview avatar when file is selected
+    document.getElementById('{{ form.avatar.id_for_label }}').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('avatar-preview');
+        const fileName = document.getElementById('avatar-file-name');
+        
+        if (file) {
+            // Update file name display
+            fileName.value = file.name;
+            
+            // Preview image
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (preview.tagName === 'IMG') {
+                        preview.src = e.target.result;
+                    } else {
+                        // Replace div with img
+                        const img = document.createElement('img');
+                        img.id = 'avatar-preview';
+                        img.src = e.target.result;
+                        img.alt = 'Avatar';
+                        img.className = 'img-thumbnail rounded-circle border-3 border-primary';
+                        img.style.width = '200px';
+                        img.style.height = '200px';
+                        img.style.objectFit = 'cover';
+                        
+                        preview.parentNode.replaceChild(img, preview);
+                        
+                        // Re-add the camera button
+                        const cameraBtn = document.createElement('label');
+                        cameraBtn.htmlFor = '{{ form.avatar.id_for_label }}';
+                        cameraBtn.className = 'btn btn-warning btn-sm rounded-circle shadow-sm cursor-pointer position-absolute bottom-0 end-0 translate-middle';
+                        cameraBtn.innerHTML = '<i class="fas fa-camera"></i>';
+                        
+                        img.parentNode.appendChild(cameraBtn);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+    
+    // Form validation
+    (function () {
+        'use strict'
+        
+        var forms = document.querySelectorAll('.needs-validation')
+        
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    
+    .form-control, .form-select {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+    }
+    
+    .input-group-text {
+        border-radius: 10px 0 0 10px;
+        border: 2px solid #e0e0e0;
+        border-right: none;
+        background-color: #f8f9fa;
+    }
+    
+    .input-group .form-control {
+        border-radius: 0 10px 10px 0;
+        border-left: none;
+    }
+    
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-group:focus-within .form-label {
+        color: var(--primary-color);
+    }
+    
+    .avatar-circle {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 4rem;
+        margin: 0 auto;
+        border: 3px solid var(--primary-color);
+    }
+</style>
+{% endblock %}

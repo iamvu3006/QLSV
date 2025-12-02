@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Giáo viên{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-4">👨‍🏫 Dashboard Giáo viên</h2>
+        <div class="alert alert-info">
+            <strong>Xin chào, {{ teacher.get_full_name|default:teacher.username }}!</strong>
+            <p class="mb-0">Chào mừng bạn đến với trang quản lý giảng dạy</p>
+        </div>
+    </div>
+</div>
+
+<!-- Thống kê tổng quan -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">🏫 Lớp phụ trách</h5>
+                <h2 class="display-4">{{ total_classes }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">👥 Tổng sinh viên</h5>
+                <h2 class="display-4">{{ total_students }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">📝 Điểm đã nhập</h5>
+                <h2 class="display-4">{{ total_grades }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">💬 Nhận xét</h5>
+                <h2 class="display-4">{{ total_notes }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Các lớp học phụ trách -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">🏫 Các lớp học đang phụ trách</h5>
+            </div>
+            <div class="card-body">
+                {% if classes %}
+                    <div class="row">
+                        {% for class_obj in classes %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <strong>{{ class_obj.ma_lop }}</strong> - {{ class_obj.ten_lop }}
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="mb-2">
+                                            <i class="bi bi-people"></i> Số sinh viên: <strong>{{ class_obj.get_student_count }}</strong>
+                                        </p>
+                                        <p class="mb-2">
+                                            <i class="bi bi-calendar"></i> Năm học: {{ class_obj.nam_hoc }}
+                                        </p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'teacher_class_detail' class_obj.pk %}" class="btn btn-sm btn-primary">
+                                                Xem chi tiết
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Bạn chưa được phân công phụ trách lớp nào.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thống kê điểm theo lớp -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">📊 Thống kê điểm trung bình theo lớp</h5>
+            </div>
+            <div class="card-body">
+                {% if class_stats %}
+                    <canvas id="classAverageChart"></canvas>
+                {% else %}
+                    <p class="text-muted">Chưa có dữ liệu thống kê điểm.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sinh viên cần quan tâm -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">🏆 Top 5 sinh viên xuất sắc</h5>
+            </div>
+            <div class="card-body">
+                {% if top_students %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Mã SV</th>
+                                <th>Họ tên</th>
+                                <th>GPA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in top_students %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ student.student.ma_sv }}</td>
+                                    <td>{{ student.student.ho_ten }}</td>
+                                    <td><strong class="text-success">{{ student.gpa }}</strong></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted">Chưa có dữ liệu GPA.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">⚠️ Sinh viên cần quan tâm (GPA < 2.0)</h5>
+            </div>
+            <div class="card-body">
+                {% if low_gpa_students %}
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Mã SV</th>
+                                <th>Họ tên</th>
+                                <th>GPA</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in low_gpa_students %}
+                                <tr>
+                                    <td>{{ student.student.ma_sv }}</td>
+                                    <td>{{ student.student.ho_ten }}</td>
+                                    <td><strong class="text-danger">{{ student.gpa }}</strong></td>
+                                    <td>
+                                        <a href="{% url 'teacher_student_grades' student.student.pk %}" 
+                                           class="btn btn-sm btn-info">Xem</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> Không có sinh viên nào cần quan tâm đặc biệt!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nhận xét gần đây -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">💬 Nhận xét gần đây</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_notes %}
+                    <div class="row">
+                        {% for note in recent_notes %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-warning">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            {{ note.student.ho_ten }} 
+                                            <span class="badge bg-info">{{ note.student.ma_sv }}</span>
+                                        </h6>
+                                        <p class="card-text">{{ note.note|truncatewords:20 }}</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar"></i> {{ note.created_at|date:"d/m/Y H:i" }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'teacher_note_list' %}" class="btn btn-warning">Xem tất cả nhận xét</a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Chưa có nhận xét nào.</p>
+                    <a href="{% url 'teacher_note_create' %}" class="btn btn-primary">Thêm nhận xét đầu tiên</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">⚡ Thao tác nhanh</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'teacher_class_list' %}" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="bi bi-house-door"></i><br>
+                            Danh sách lớp
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'grade_create' %}" class="btn btn-outline-success btn-lg w-100">
+                            <i class="bi bi-plus-circle"></i><br>
+                            Nhập điểm
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'teacher_note_create' %}" class="btn btn-outline-warning btn-lg w-100">
+                            <i class="bi bi-chat-left-text"></i><br>
+                            Thêm nhận xét
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'subject_list' %}" class="btn btn-outline-info btn-lg w-100">
+                            <i class="bi bi-book"></i><br>
+                            Môn học
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script cho Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<script>
+    // Biểu đồ điểm trung bình theo lớp
+    {% if class_stats %}
+    const classStatsData = {{ class_stats|safe }};
+    const classLabels = classStatsData.map(s => s.class_name);
+    const classAverages = classStatsData.map(s => s.average_grade);
+    
+    const ctx = document.getElementById('classAverageChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: classLabels,
+                datasets: [{
+                    label: 'Điểm trung bình',
+                    data: classAverages,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Điểm trung bình các lớp học'
+                    }
+                }
+            }
+        });
+    }
+    {% endif %}
+</script>
+{% endblock %}

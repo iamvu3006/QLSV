@@ -2,32 +2,190 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">{{ title }}</h4>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                                <div class="text-danger">{{ field.errors }}</div>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3">
+                            {% if 'Sửa' in title %}
+                                <i class="fas fa-edit fa-2x"></i>
+                            {% else %}
+                                <i class="fas fa-plus-circle fa-2x"></i>
                             {% endif %}
                         </div>
-                    {% endfor %}
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{% url 'grade_list' %}" class="btn btn-secondary">Hủy</a>
-                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <div>
+                            <h4 class="mb-1">{{ title }}</h4>
+                            <p class="mb-0 opacity-75">Thông tin điểm số</p>
+                        </div>
                     </div>
-                </form>
+                </div>
+                
+                <div class="card-body p-5">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            {% for field in form %}
+                                <div class="col-md-{% if 'ghi_chu' in field.name %}12{% else %}6{% endif %}">
+                                    <div class="form-floating mb-3">
+                                        {{ field }}
+                                        <label for="{{ field.id_for_label }}">
+                                            <i class="fas fa-{% if 'student' in field.name %}user{% elif 'subject' in field.name %}book{% elif 'diem' in field.name %}chart-line{% elif 'hoc_ky' in field.name %}calendar-alt{% elif 'nam_hoc' in field.name %}calendar{% else %}sticky-note{% endif %} me-2"></i>
+                                            {{ field.label }}
+                                        </label>
+                                        {% if field.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                        {% if field.help_text %}
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                {{ field.help_text }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Preview Grade Card -->
+                        <div class="card preview-card border-0 bg-light mb-4">
+                            <div class="card-body p-4">
+                                <h6 class="mb-3"><i class="fas fa-eye me-2"></i>Xem trước điểm số</h6>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="preview-item text-center p-3 rounded bg-white">
+                                            <div class="preview-label text-muted mb-1">Điểm quá trình</div>
+                                            <div class="preview-value fw-bold fs-4 text-primary">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="preview-item text-center p-3 rounded bg-white">
+                                            <div class="preview-label text-muted mb-1">Điểm giữa kỳ</div>
+                                            <div class="preview-value fw-bold fs-4 text-warning">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="preview-item text-center p-3 rounded bg-white">
+                                            <div class="preview-label text-muted mb-1">Điểm cuối kỳ</div>
+                                            <div class="preview-value fw-bold fs-4 text-danger">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="preview-item text-center p-3 rounded bg-white">
+                                            <div class="preview-label text-muted mb-1">Điểm tổng kết</div>
+                                            <div class="preview-value fw-bold fs-4 text-success">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-5 pt-4 border-top">
+                            <a href="{% url 'grade_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-times me-2"></i>Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                {% if 'Sửa' in title %}
+                                    <i class="fas fa-save me-2"></i>Cập nhật điểm
+                                {% else %}
+                                    <i class="fas fa-check me-2"></i>Lưu điểm
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.header-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-floating {
+    position: relative;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: 60px;
+    padding: 20px 15px 5px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.form-floating > textarea.form-control {
+    height: 100px;
+    padding-top: 30px;
+}
+
+.form-floating > label {
+    padding: 20px 15px;
+    color: #6c757d;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-select:focus ~ label {
+    color: #667eea;
+}
+
+.preview-card {
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.preview-item {
+    border: 2px solid #dee2e6;
+    transition: all 0.3s;
+}
+
+.preview-item:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.btn-lg {
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formFields = document.querySelectorAll('.form-floating select, .form-floating input, .form-floating textarea');
+    formFields.forEach(field => {
+        field.classList.add('form-control');
+    });
+});
+</script>
+{% endblock %}

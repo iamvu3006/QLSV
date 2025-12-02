@@ -2,83 +2,289 @@
 {% block title %}Nhập điểm hàng loạt{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">Nhập điểm hàng loạt</h4>
-            </div>
-            <div class="card-body">
-                <form method="post" id="bulkGradeForm">
-                    {% csrf_token %}
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <label class="form-label">{{ bulk_form.class_obj.label }}</label>
-                            {{ bulk_form.class_obj }}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-success text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3">
+                            <i class="fas fa-file-import fa-2x"></i>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label">{{ bulk_form.subject.label }}</label>
-                            {{ bulk_form.subject }}
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">{{ bulk_form.hoc_ky.label }}</label>
-                            {{ bulk_form.hoc_ky }}
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">{{ bulk_form.nam_hoc.label }}</label>
-                            {{ bulk_form.nam_hoc }}
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-info d-block" onclick="loadStudents()">Tải danh sách</button>
+                        <div>
+                            <h4 class="mb-1">Nhập điểm hàng loạt</h4>
+                            <p class="mb-0 opacity-75">Thêm điểm cho nhiều sinh viên cùng lúc</p>
                         </div>
                     </div>
-                    
-                    {{ formset.management_form }}
-                    <div id="gradeForms">
-                        {% for form in formset %}
-                            <div class="card mb-3 grade-form-row">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label">Sinh viên</label>
-                                            {{ form.student }}
+                </div>
+                
+                <div class="card-body p-5">
+                    <!-- Bulk Configuration -->
+                    <div class="bulk-config-card mb-5">
+                        <h5 class="mb-4"><i class="fas fa-cog me-2"></i>Cấu hình chung</h5>
+                        <form method="post" id="bulkGradeForm">
+                            {% csrf_token %}
+                            
+                            <div class="row g-4">
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="config-item">
+                                        <label class="form-label fw-bold mb-2">
+                                            <i class="fas fa-chalkboard me-2 text-primary"></i>
+                                            {{ bulk_form.class_obj.label }}
+                                        </label>
+                                        {{ bulk_form.class_obj }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="config-item">
+                                        <label class="form-label fw-bold mb-2">
+                                            <i class="fas fa-book me-2 text-primary"></i>
+                                            {{ bulk_form.subject.label }}
+                                        </label>
+                                        {{ bulk_form.subject }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6">
+                                    <div class="config-item">
+                                        <label class="form-label fw-bold mb-2">
+                                            <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                            {{ bulk_form.hoc_ky.label }}
+                                        </label>
+                                        {{ bulk_form.hoc_ky }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-6">
+                                    <div class="config-item">
+                                        <label class="form-label fw-bold mb-2">
+                                            <i class="fas fa-calendar me-2 text-primary"></i>
+                                            {{ bulk_form.nam_hoc.label }}
+                                        </label>
+                                        {{ bulk_form.nam_hoc }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-md-12">
+                                    <div class="config-item d-flex align-items-end h-100">
+                                        <button type="button" class="btn btn-primary btn-lg w-100" onclick="loadStudents()">
+                                            <i class="fas fa-sync me-2"></i>Tải DS
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Student Grades Forms -->
+                        <div class="student-forms-section">
+                            <div class="section-header d-flex justify-content-between align-items-center mb-4">
+                                <h5>
+                                    <i class="fas fa-users me-2"></i>Danh sách điểm sinh viên
+                                    <span class="badge bg-primary ms-2">{{ formset|length }}</span>
+                                </h5>
+                                <button type="button" class="btn btn-outline-info btn-sm" onclick="calculateAll()">
+                                    <i class="fas fa-calculator me-1"></i>Tính toán tất cả
+                                </button>
+                            </div>
+                            
+                            {{ formset.management_form }}
+                            <div id="gradeForms">
+                                {% for form in formset %}
+                                    <div class="grade-form-card mb-4 border rounded-3">
+                                        <div class="card-header bg-light py-3">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-8">
+                                                    <div class="student-info d-flex align-items-center">
+                                                        <div class="avatar-circle me-3">
+                                                            <span class="initials">
+                                                                {{ form.student.value.instance.ho_ten|slice:":1"|default:"S" }}
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-bold">{{ form.student.value.instance.ho_ten|default:"Sinh viên" }}</div>
+                                                            <small class="text-muted">{{ form.student.value.instance.ma_sv|default:"Mã SV" }}</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-end">
+                                                    <div class="form-check form-switch">
+                                                        {{ form.DELETE }}
+                                                        <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">
+                                                            <small>Xóa mục này</small>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Điểm quá trình</label>
-                                            {{ form.diem_qua_trinh }}
+                                        <div class="card-body">
+                                            <div class="row g-3">
+                                                <div class="col-lg-3">
+                                                    <label class="form-label fw-bold">Điểm quá trình</label>
+                                                    <div class="input-group">
+                                                        {{ form.diem_qua_trinh }}
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label class="form-label fw-bold">Điểm giữa kỳ</label>
+                                                    <div class="input-group">
+                                                        {{ form.diem_giua_ky }}
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label class="form-label fw-bold">Điểm cuối kỳ</label>
+                                                    <div class="input-group">
+                                                        {{ form.diem_cuoi_ky }}
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label class="form-label fw-bold">Điểm tổng kết</label>
+                                                    <input type="text" class="form-control text-center fw-bold fs-5 text-success" 
+                                                           value="-" readonly style="background: #f8f9fa;">
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <label class="form-label fw-bold">Ghi chú</label>
+                                                    {{ form.ghi_chu }}
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <label class="form-label fw-bold">&nbsp;</label>
+                                                    <button type="button" class="btn btn-outline-primary w-100" onclick="calculateRow(this)">
+                                                        <i class="fas fa-calculator me-1"></i>Tính điểm
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Điểm giữa kỳ</label>
-                                            {{ form.diem_giua_ky }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="summary-card mt-5 p-4 bg-light rounded-3 border">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="summary-item text-center p-3">
+                                            <div class="summary-value fs-2 fw-bold text-primary">{{ formset|length }}</div>
+                                            <div class="summary-label text-muted">Tổng số sinh viên</div>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Điểm cuối kỳ</label>
-                                            {{ form.diem_cuoi_ky }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="summary-item text-center p-3">
+                                            <div class="summary-value fs-2 fw-bold text-success">-</div>
+                                            <div class="summary-label text-muted">Điểm trung bình</div>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Ghi chú</label>
-                                            {{ form.ghi_chu }}
-                                        </div>
-                                        <div class="col-md-1">
-                                            <label class="form-label">Xóa</label>
-                                            {{ form.DELETE }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="summary-item text-center p-3">
+                                            <div class="summary-value fs-2 fw-bold text-info">-</div>
+                                            <div class="summary-label text-muted">Tổng điểm đã nhập</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
+                            
+                            <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-5 pt-4 border-top">
+                                <a href="{% url 'grade_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                    <i class="fas fa-times me-2"></i>Hủy bỏ
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg px-4">
+                                    <i class="fas fa-save me-2"></i>Lưu tất cả điểm
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{% url 'grade_list' %}" class="btn btn-secondary">Hủy</a>
-                        <button type="submit" class="btn btn-success">Lưu tất cả</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.header-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.config-item select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.config-item select:focus {
+    border-color: #43e97b;
+    box-shadow: 0 0 0 3px rgba(67, 233, 123, 0.2);
+}
+
+.avatar-circle {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.grade-form-card {
+    transition: all 0.3s;
+    border-left: 4px solid #43e97b !important;
+}
+
+.grade-form-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.form-check-input:checked {
+    background-color: #f5576c;
+    border-color: #f5576c;
+}
+
+.input-group-text {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+}
+
+.summary-item {
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+}
+
+.summary-item:hover {
+    border-color: #43e97b;
+    transform: translateY(-2px);
+}
+
+.btn-lg {
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.section-header {
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+</style>
 
 <script>
 function loadStudents() {
@@ -87,8 +293,24 @@ function loadStudents() {
         alert('Vui lòng chọn lớp học trước!');
         return;
     }
-    // Có thể thêm logic AJAX để tải danh sách sinh viên động
+    // Logic AJAX để tải danh sách sinh viên
+    console.log('Loading students for class:', classId);
+}
+
+function calculateRow(button) {
+    const row = button.closest('.grade-form-card');
+    const process = parseFloat(row.querySelector('[name$="diem_qua_trinh"]').value) || 0;
+    const mid = parseFloat(row.querySelector('[name$="diem_giua_ky"]').value) || 0;
+    const final = parseFloat(row.querySelector('[name$="diem_cuoi_ky"]').value) || 0;
+    
+    // Tính điểm tổng kết (ví dụ: 20% QT + 30% GK + 50% CK)
+    const total = (process * 0.2) + (mid * 0.3) + (final * 0.5);
+    row.querySelector('.text-success').value = total.toFixed(2);
+}
+
+function calculateAll() {
+    const buttons = document.querySelectorAll('[onclick="calculateRow(this)"]');
+    buttons.forEach(btn => calculateRow(btn));
 }
 </script>
 {% endblock %}
-

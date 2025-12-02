@@ -4,14 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegisterForm
 
+# accounts/views.py
+
 def login_view(request):
     """View xử lý đăng nhập"""
-    # Nếu user đã login, redirect về dashboard
+    # Nếu user đã login, redirect về dashboard tương ứng
     if request.user.is_authenticated:
         if request.user.role == 'admin':
-            return redirect('dashboard')
+            return redirect('dashboard')  # Admin dashboard
         elif request.user.role == 'teacher':
-            return redirect('teacher_dashboard')
+            return redirect('teacher_dashboard')  # Teacher dashboard mới
         elif request.user.role == 'student':
             return redirect('student_dashboard')
     
@@ -28,9 +30,9 @@ def login_view(request):
             
             # Redirect dựa trên role
             if user.role == 'admin':
-                return redirect("dashboard")
+                return redirect("dashboard")  # Admin dashboard
             elif user.role == 'teacher':
-                return redirect("teacher_dashboard")
+                return redirect("teacher_dashboard")  # Teacher dashboard mới
             elif user.role == 'student':
                 return redirect("student_dashboard")
             else:

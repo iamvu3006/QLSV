@@ -2,68 +2,223 @@
 {% block title %}Danh sách điểm số{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Danh sách điểm số</h2>
-    <div>
-        <a href="{% url 'grade_create' %}" class="btn btn-primary">+ Thêm điểm</a>
-        <a href="{% url 'bulk_grade_create' %}" class="btn btn-success">Nhập điểm hàng loạt</a>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="page-header mb-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h2 mb-2">Quản lý điểm số</h1>
+                <p class="text-muted">Xem và quản lý điểm số sinh viên</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'grade_create' %}" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-plus-circle me-2"></i>Thêm điểm
+                </a>
+                <a href="{% url 'bulk_grade_create' %}" class="btn btn-success btn-lg px-4">
+                    <i class="fas fa-file-import me-2"></i>Nhập hàng loạt
+                </a>
+            </div>
+        </div>
     </div>
+
+    <!-- Filter Card -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-light py-3">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Bộ lọc tìm kiếm</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Học kỳ</label>
+                    <select name="hoc_ky" class="form-select form-select-lg">
+                        <option value="">Tất cả học kỳ</option>
+                        {% for value, label in HOC_KY_CHOICES %}
+                            <option value="{{ value }}" {% if hoc_ky == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Năm học</label>
+                    <input type="text" name="nam_hoc" class="form-control form-control-lg" 
+                           value="{{ nam_hoc }}" placeholder="VD: 2024-2025">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <div class="d-flex gap-2 w-100">
+                        <button type="submit" class="btn btn-primary btn-lg px-4 flex-grow-1">
+                            <i class="fas fa-search me-2"></i>Tìm kiếm
+                        </button>
+                        <a href="{% url 'grade_list' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-redo me-2"></i>Đặt lại
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Grades Table -->
+    {% if grades %}
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-gradient-info text-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Danh sách điểm số
+                    </h5>
+                    <span class="badge bg-white text-info fs-6">{{ grades|length }} bản ghi</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Sinh viên</th>
+                                <th>Môn học</th>
+                                <th>Học kỳ</th>
+                                <th>Năm học</th>
+                                <th class="text-center">Điểm tổng kết</th>
+                                <th class="text-end pe-4">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                                <tr class="border-top">
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3">
+                                                <span class="initials">{{ grade.student.ho_ten|slice:":1" }}</span>
+                                            </div>
+                                            <div>
+                                                <div class="fw-medium">{{ grade.student.ho_ten }}</div>
+                                                <small class="text-muted">{{ grade.student.ma_sv }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1">
+                                            {{ grade.subject.ten_mon }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-1">
+                                            <i class="fas fa-calendar-alt me-1"></i>HK{{ grade.hoc_ky }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1">
+                                            {{ grade.nam_hoc }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="grade-circle mx-auto">
+                                            <span class="grade-value fw-bold">
+                                                {{ grade.diem_tong_ket|default:"-" }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'grade_update' grade.pk %}" 
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'grade_delete' grade.pk %}" 
+                                               class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state-container">
+            <div class="text-center py-6">
+                <div class="empty-state-icon mb-4">
+                    <i class="fas fa-chart-line fa-4x text-muted"></i>
+                </div>
+                <h3 class="h4 text-muted mb-3">Chưa có điểm số nào</h3>
+                <p class="text-muted mb-4">Bắt đầu bằng cách thêm điểm cho sinh viên</p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="{% url 'grade_create' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-plus-circle me-2"></i>Thêm điểm mới
+                    </a>
+                    <a href="{% url 'bulk_grade_create' %}" class="btn btn-success btn-lg px-4">
+                        <i class="fas fa-file-import me-2"></i>Nhập hàng loạt
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
 
-<form method="get" class="mb-3">
-    <div class="row">
-        <div class="col-md-4">
-            <label class="form-label">Học kỳ:</label>
-            <select name="hoc_ky" class="form-select">
-                <option value="">Tất cả</option>
-                {% for value, label in HOC_KY_CHOICES %}
-                    <option value="{{ value }}" {% if hoc_ky == value %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Năm học:</label>
-            <input type="text" name="nam_hoc" class="form-control" value="{{ nam_hoc }}">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">&nbsp;</label>
-            <button type="submit" class="btn btn-primary d-block">Lọc</button>
-        </div>
-    </div>
-</form>
+<style>
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
 
-{% if grades %}
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Mã SV</th>
-                <th>Họ tên</th>
-                <th>Môn học</th>
-                <th>Học kỳ</th>
-                <th>Năm học</th>
-                <th>Điểm tổng kết</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for grade in grades %}
-                <tr>
-                    <td>{{ grade.student.ma_sv }}</td>
-                    <td>{{ grade.student.ho_ten }}</td>
-                    <td>{{ grade.subject.ten_mon }}</td>
-                    <td>HK{{ grade.hoc_ky }}</td>
-                    <td>{{ grade.nam_hoc }}</td>
-                    <td><strong>{{ grade.diem_tong_ket|default:"-" }}</strong></td>
-                    <td>
-                        <a href="{% url 'grade_update' grade.pk %}" class="btn btn-sm btn-warning">Sửa</a>
-                        <a href="{% url 'grade_delete' grade.pk %}" class="btn btn-sm btn-danger">Xóa</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <div class="alert alert-info">Chưa có điểm số nào.</div>
-{% endif %}
+.grade-circle {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+}
+
+.grade-value {
+    color: white !important;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.table th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    color: #495057;
+}
+
+.page-header {
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.empty-state-container {
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border: 2px dashed #dee2e6;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+</style>
 {% endblock %}
-

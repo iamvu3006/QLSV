@@ -1,7 +1,696 @@
 {% extends 'accounts/base_login.html' %}
+{% block title %}Thông tin tài khoản - {{ user.username }}{% endblock %}
+
 {% block content %}
-<h2>Trang cá nhân</h2>
-<p>Xin chào, {{ user.username }}!</p>
-<p>Vai trò: {{ user.role }}</p>
-<a href="{% url 'logout' %}">Đăng xuất</a>
+<div class="row justify-content-center">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header bg-gradient-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0"><i class="fas fa-user-circle me-2"></i>Trang thông tin cá nhân</h3>
+                        <p class="mb-0 mt-2 opacity-75">Quản lý và xem thông tin tài khoản của bạn</p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-white text-primary fs-6 me-3">
+                            <i class="fas fa-{% if user.role == 'admin' %}crown{% elif user.role == 'teacher' %}chalkboard-teacher{% else %}user-graduate{% endif %} me-1"></i>
+                            {{ user.get_role_display|upper }}
+                        </span>
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-circle me-1" style="font-size: 0.6rem;"></i>
+                            ĐANG HOẠT ĐỘNG
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <!-- Profile Header Section -->
+                <div class="row align-items-center mb-5">
+                    <div class="col-md-4 col-lg-3 text-center">
+                        <div class="position-relative d-inline-block mb-4">
+                            <div class="avatar-circle" style="width: 160px; height: 160px;">
+                                <div class="avatar-initials display-4 fw-bold">
+                                    {{ user.username|slice:":2"|upper }}
+                                </div>
+                            </div>
+                            <div class="position-absolute bottom-0 end-0 translate-middle">
+                                <button class="btn btn-primary btn-sm rounded-circle shadow" 
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Đổi ảnh đại diện">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h5 class="fw-bold mb-1">{{ user.username }}</h5>
+                            <p class="text-dark mb-2">{{ user.email }}</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-star me-1"></i>Premium
+                                </span>
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Verified
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8 col-lg-9">
+                        <div class="row">
+                            <!-- Quick Stats -->
+                            <div class="col-lg-4">
+                                <div class="card border-0 bg-primary bg-opacity-5 h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
+                                                <i class="fas fa-sign-in-alt fa-lg"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-dark small fw-medium">Lần đăng nhập cuối</div>
+                                                <div class="h5 fw-bold">{{ user.last_login|date:"H:i d/m/Y"|default:"Chưa có" }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 6px;">
+                                            <div class="progress-bar bg-primary" style="width: 85%"></div>
+                                        </div>
+                                        <small class="text-secondary">Hoạt động tuần này</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="card border-0 bg-info bg-opacity-5 h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 me-3">
+                                                <i class="fas fa-calendar-plus fa-lg"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-dark small fw-medium">Thành viên từ</div>
+                                                <div class="h5 fw-bold">{{ user.date_joined|date:"d/m/Y" }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 6px;">
+                                            <div class="progress-bar bg-info" style="width: 70%"></div>
+                                        </div>
+                                        <small class="text-secondary">Thời gian sử dụng hệ thống</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="card border-0 bg-success bg-opacity-5 h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
+                                                <i class="fas fa-shield-alt fa-lg"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-dark small fw-medium">Trạng thái bảo mật</div>
+                                                <div class="h5 fw-bold">Mức cao</div>
+                                            </div>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 90%"></div>
+                                        </div>
+                                        <small class="text-secondary">Độ an toàn tài khoản</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Content - Horizontal Layout -->
+                <div class="row">
+                    <!-- Left Column: Account Details -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-id-card text-primary me-2"></i>
+                                    Thông tin tài khoản
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center p-3 border rounded">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-user text-primary fa-2x me-3"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="text-secondary small fw-medium">Tên đăng nhập</div>
+                                                <div class="h5 fw-bold text-primary">{{ user.username }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center p-3 border rounded">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-envelope text-info fa-2x me-3"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="text-secondary small fw-medium">Địa chỉ email</div>
+                                                <div class="h5 fw-bold text-info">{{ user.email|default:"Chưa cập nhật" }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center p-3 border rounded">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-user-tag text-success fa-2x me-3"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="text-secondary small fw-medium">Vai trò trong hệ thống</div>
+                                                <div class="h5 fw-bold text-success">{{ user.get_role_display }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center p-3 border rounded">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-calendar-check text-warning fa-2x me-3"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="text-secondary small fw-medium">Ngày tạo tài khoản</div>
+                                                <div class="h5 fw-bold text-warning">{{ user.date_joined|date:"d/m/Y" }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center p-3 border rounded">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-clock text-danger fa-2x me-3"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="text-secondary small fw-medium">Lần đăng nhập cuối</div>
+                                                <div class="h5 fw-bold text-danger">{{ user.last_login|date:"H:i d/m/Y"|default:"Chưa đăng nhập" }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center p-3 border rounded">
+                                            <div class="flex-shrink-0">
+                                                <i class="fas fa-id-badge text-secondary fa-2x me-3"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="text-secondary small fw-medium">ID người dùng</div>
+                                                <div class="h5 fw-bold text-secondary">#{{ user.id|stringformat:"04d" }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Settings -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-cogs text-primary me-2"></i>
+                                    Cài đặt tài khoản
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="card border h-100 hover-effect">
+                                            <div class="card-body text-center">
+                                                <div class="text-primary mb-3">
+                                                    <i class="fas fa-lock fa-3x"></i>
+                                                </div>
+                                                <h6 class="card-title">Đổi mật khẩu</h6>
+                                                <p class="text-secondary small mb-3">Cập nhật mật khẩu bảo mật mới</p>
+                                                <button class="btn btn-outline-primary w-100" disabled>
+                                                    <i class="fas fa-edit me-2"></i>Thay đổi
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border h-100 hover-effect">
+                                            <div class="card-body text-center">
+                                                <div class="text-info mb-3">
+                                                    <i class="fas fa-bell fa-3x"></i>
+                                                </div>
+                                                <h6 class="card-title">Thông báo</h6>
+                                                <p class="text-secondary small mb-3">Quản lý cài đặt thông báo</p>
+                                                <button class="btn btn-outline-info w-100" disabled>
+                                                    <i class="fas fa-sliders-h me-2"></i>Cài đặt
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border h-100 hover-effect">
+                                            <div class="card-body text-center">
+                                                <div class="text-success mb-3">
+                                                    <i class="fas fa-user-shield fa-3x"></i>
+                                                </div>
+                                                <h6 class="card-title">Bảo mật</h6>
+                                                <p class="text-secondary small mb-3">Xem hoạt động đăng nhập</p>
+                                                <button class="btn btn-outline-success w-100" disabled>
+                                                    <i class="fas fa-history me-2"></i>Xem nhật ký
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border h-100 hover-effect">
+                                            <div class="card-body text-center">
+                                                <div class="text-warning mb-3">
+                                                    <i class="fas fa-question-circle fa-3x"></i>
+                                                </div>
+                                                <h6 class="card-title">Hỗ trợ</h6>
+                                                <p class="text-secondary small mb-3">Liên hệ hỗ trợ kỹ thuật</p>
+                                                <button class="btn btn-outline-warning w-100" disabled>
+                                                    <i class="fas fa-headset me-2"></i>Liên hệ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Quick Actions & System Info -->
+                    <div class="col-lg-5">
+                        <!-- Quick Actions Card -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-bolt text-warning me-2"></i>
+                                    Hành động nhanh
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-3">
+                                    <a href="{% url 'logout' %}" class="btn btn-danger btn-lg py-3">
+                                        <i class="fas fa-sign-out-alt me-2"></i>
+                                        <strong>ĐĂNG XUẤT</strong>
+                                    </a>
+                                    
+                                    <button class="btn btn-primary btn-lg py-3" disabled>
+                                        <i class="fas fa-user-edit me-2"></i>
+                                        Chỉnh sửa hồ sơ
+                                    </button>
+                                    
+                                    <button class="btn btn-info btn-lg py-3" disabled>
+                                        <i class="fas fa-chart-line me-2"></i>
+                                        Xem báo cáo
+                                    </button>
+                                    
+                                    <button class="btn btn-success btn-lg py-3" disabled>
+                                        <i class="fas fa-download me-2"></i>
+                                        Xuất dữ liệu
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-4 pt-3 border-top">
+                                    <h6 class="fw-bold mb-3">
+                                        <i class="fas fa-history me-2 text-secondary"></i>
+                                        Hoạt động gần đây
+                                    </h6>
+                                    <div class="list-group list-group-flush">
+                                        <div class="list-group-item border-0 px-0">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <small class="text-secondary">
+                                                    <i class="fas fa-sign-in-alt me-1"></i>
+                                                    Đăng nhập thành công
+                                                </small>
+                                                <small class="text-secondary">{{ user.last_login|date:"H:i"|default:"--:--" }}</small>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item border-0 px-0">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <small class="text-secondary">
+                                                    <i class="fas fa-user-check me-1"></i>
+                                                    Xác thực tài khoản
+                                                </small>
+                                                <small class="text-secondary">{{ user.date_joined|date:"H:i" }}</small>
+                                            </div>
+                                        </div>
+                                        <div class="list-group-item border-0 px-0">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <small class="text-secondary">
+                                                    <i class="fas fa-cog me-1"></i>
+                                                    Cập nhật cài đặt
+                                                </small>
+                                                <small class="text-secondary">--:--</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- System Information -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle text-info me-2"></i>
+                                    Thông tin hệ thống
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="text-center p-3 bg-light rounded">
+                                            <div class="text-primary mb-2">
+                                                <i class="fas fa-server fa-2x"></i>
+                                            </div>
+                                            <div class="h4 fw-bold">QLSV 2.0</div>
+                                            <div class="text-secondary small">Phiên bản</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-center p-3 bg-light rounded">
+                                            <div class="text-success mb-2">
+                                                <i class="fas fa-check-circle fa-2x"></i>
+                                            </div>
+                                            <div class="h4 fw-bold">Online</div>
+                                            <div class="text-secondary small">Trạng thái</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="bg-light p-3 rounded">
+                                            <h6 class="fw-bold mb-3">
+                                                <i class="fas fa-shield-alt me-2 text-success"></i>
+                                                Trạng thái bảo mật
+                                            </h6>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-success" style="width: 90%"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between small text-secondary">
+                                                <span>Mức độ bảo mật</span>
+                                                <span>90% - Cao</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="alert alert-warning bg-warning bg-opacity-10 border-warning">
+                                            <div class="d-flex">
+                                                <i class="fas fa-exclamation-triangle text-warning me-2 mt-1"></i>
+                                                <div>
+                                                    <small class="fw-bold">Lời khuyên bảo mật:</small>
+                                                    <small class="d-block text-dark">
+                                                        Để bảo vệ tài khoản, hãy đăng xuất khi không sử dụng và không chia sẻ thông tin đăng nhập.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bottom Section: Session Management -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="fw-bold mb-1">
+                                            <i class="fas fa-user-clock me-2 text-primary"></i>
+                                            Quản lý phiên làm việc
+                                        </h6>
+                                        <p class="text-secondary mb-0 small">
+                                            Phiên hiện tại đang hoạt động từ {{ user.last_login|date:"H:i"|default:"--:--" }}
+                                        </p>
+                                    </div>
+                                    <div class="d-flex gap-3">
+                                        <button class="btn btn-outline-primary" disabled>
+                                            <i class="fas fa-sync-alt me-2"></i>Làm mới phiên
+                                        </button>
+                                        <a href="{% url 'logout' %}" class="btn btn-danger">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Kết thúc phiên
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer text-center py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-4 text-md-start">
+                        <small class="text-secondary">
+                            <i class="fas fa-user me-1"></i>
+                            ID: #{{ user.id|stringformat:"04d" }}
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-secondary">
+                            <i class="fas fa-clock me-1"></i>
+                            {% now "H:i d/m/Y" %}
+                        </small>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <small class="text-secondary">
+                            <i class="fas fa-copyright me-1"></i>
+                            2025 Hệ thống QLSV
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .avatar-circle {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3.5rem;
+        border: 5px solid white;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        margin: 0 auto;
+    }
+    
+    .avatar-initials {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .hover-effect {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .border {
+        border: 1px solid #e0e0e0 !important;
+    }
+    
+    .shadow-sm {
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .progress {
+        border-radius: 10px;
+    }
+    
+    .progress-bar {
+        border-radius: 10px;
+    }
+    
+    /* Improved contrast for text */
+    .text-secondary {
+        color: #6c757d !important;
+    }
+    
+    .text-dark {
+        color: #343a40 !important;
+    }
+    
+    .text-muted {
+        color: #868e96 !important;
+    }
+    
+    /* Desktop-specific optimizations */
+    @media (min-width: 992px) {
+        .card-body {
+            padding: 2.5rem !important;
+        }
+        
+        .mb-5 {
+            margin-bottom: 3rem !important;
+        }
+        
+        .mb-4 {
+            margin-bottom: 2rem !important;
+        }
+        
+        .py-3 {
+            padding-top: 1.2rem !important;
+            padding-bottom: 1.2rem !important;
+        }
+        
+        .h5 {
+            font-size: 1.25rem !important;
+        }
+        
+        /* Enhanced hover effects for desktop */
+        .d-flex.align-items-center.p-3.border.rounded {
+            transition: all 0.2s ease;
+        }
+        
+        .d-flex.align-items-center.p-3.border.rounded:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: rgba(67, 97, 238, 0.02);
+        }
+        
+        /* Better button styling for desktop */
+        .btn-lg {
+            padding: 1rem 1.5rem !important;
+            font-size: 1.1rem !important;
+        }
+        
+        .d-grid.gap-3 .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Smooth animations */
+        .avatar-circle {
+            transition: transform 0.3s ease;
+        }
+        
+        .avatar-circle:hover {
+            transform: scale(1.05);
+        }
+    }
+    
+    /* Animation for active status */
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+    
+    .fa-circle {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Custom colors */
+    .text-primary { color: #4361ee !important; }
+    .text-info { color: #118ab2 !important; }
+    .text-success { color: #06d6a0 !important; }
+    .text-warning { color: #ff9e00 !important; }
+    .text-danger { color: #ef476f !important; }
+    
+    /* Better card styling for desktop */
+    .card.border-0 {
+        border-radius: 15px !important;
+    }
+    
+    /* Enhanced typography for desktop */
+    h3 { font-size: 2rem !important; font-weight: 700; }
+    h5 { font-size: 1.25rem !important; font-weight: 600; }
+    h6 { font-size: 1rem !important; font-weight: 600; }
+    
+    /* Improved text visibility */
+    small {
+        font-size: 0.875rem !important;
+    }
+    
+    .text-secondary.small {
+        color: #495057 !important;
+        font-weight: 500;
+    }
+</style>
+
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Add click effects to profile cards
+        const profileCards = document.querySelectorAll('.d-flex.align-items-center.p-3.border.rounded');
+        profileCards.forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function() {
+                const field = this.querySelector('.text-secondary').textContent;
+                alert(`Bạn đang xem thông tin: ${field}`);
+            });
+        });
+        
+        // Add hover effect to quick action cards
+        const actionCards = document.querySelectorAll('.card.h-100.hover-effect');
+        actionCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.borderColor = '#4361ee';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.borderColor = '#e0e0e0';
+            });
+        });
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+P to print profile
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+            // Ctrl+Q to logout
+            if (e.ctrlKey && e.key === 'q') {
+                e.preventDefault();
+                if (confirm('Bạn có muốn đăng xuất không?')) {
+                    window.location.href = "{% url 'logout' %}";
+                }
+            }
+        });
+        
+        // Add session timer (demo)
+        let sessionTimer = 1800; // 30 minutes in seconds
+        const timerElement = document.createElement('small');
+        timerElement.className = 'text-secondary ms-3';
+        document.querySelector('.fw-bold.mb-1').appendChild(timerElement);
+        
+        function updateTimer() {
+            const minutes = Math.floor(sessionTimer / 60);
+            const seconds = sessionTimer % 60;
+            timerElement.textContent = `(${minutes}:${seconds.toString().padStart(2, '0')})`;
+            sessionTimer--;
+            
+            if (sessionTimer < 0) {
+                timerElement.textContent = '(Hết hạn)';
+                timerElement.className = 'text-danger ms-3';
+            }
+        }
+        
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    });
+</script>
 {% endblock %}

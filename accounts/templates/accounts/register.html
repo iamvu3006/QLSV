@@ -1,125 +1,273 @@
 {% extends 'accounts/base_login.html' %}
-{% block title %}Đăng ký - QLSV{% endblock %}
+{% block title %}Đăng ký - Hệ thống QLSV{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow">
-            <div class="card-header bg-success text-white text-center">
-                <h4 class="mb-0">📝 Đăng Ký Tài Khoản</h4>
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Tạo tài khoản mới</h4>
+                <p class="mb-0 mt-2 opacity-75">Điền đầy đủ thông tin để đăng ký tài khoản</p>
             </div>
-            <div class="card-body p-4">
-                <!-- Hiển thị messages -->
+            
+            <div class="card-body">
+                <!-- Messages -->
                 {% if messages %}
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
+                            <div class="d-flex align-items-center">
+                                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'danger' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
+                                <div>{{ message }}</div>
+                            </div>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endfor %}
                 {% endif %}
 
-                <form method="post">
+                <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
                     
-                    <div class="mb-3">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">
-                            Tên đăng nhập <span class="text-danger">*</span>
-                        </label>
-                        {{ form.username }}
-                        {% if form.username.errors %}
-                            <div class="text-danger small">{{ form.username.errors }}</div>
-                        {% endif %}
-                        <small class="form-text text-muted">
-                            150 ký tự hoặc ít hơn. Chỉ chữ cái, số và @/./+/-/_
-                        </small>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.email.id_for_label }}" class="form-label">
-                            Email <span class="text-danger">*</span>
-                        </label>
-                        {{ form.email }}
-                        {% if form.email.errors %}
-                            <div class="text-danger small">{{ form.email.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.role.id_for_label }}" class="form-label">
-                            Vai trò <span class="text-danger">*</span>
-                        </label>
-                        {{ form.role }}
-                        {% if form.role.errors %}
-                            <div class="text-danger small">{{ form.role.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.password1.id_for_label }}" class="form-label">
-                            Mật khẩu <span class="text-danger">*</span>
-                        </label>
-                        {{ form.password1 }}
-                        {% if form.password1.errors %}
-                            <div class="text-danger small">{{ form.password1.errors }}</div>
-                        {% endif %}
-                        <small class="form-text text-muted">
-                            Mật khẩu phải có ít nhất 8 ký tự và không được quá đơn giản
-                        </small>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.password2.id_for_label }}" class="form-label">
-                            Xác nhận mật khẩu <span class="text-danger">*</span>
-                        </label>
-                        {{ form.password2 }}
-                        {% if form.password2.errors %}
-                            <div class="text-danger small">{{ form.password2.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="d-grid mb-3">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            ✅ Đăng ký
-                        </button>
-                    </div>
-                    
-                    <div class="text-center">
-                        <small class="text-muted">
-                            Đã có tài khoản? 
-                            <a href="{% url 'login' %}" class="text-decoration-none">Đăng nhập ngay</a>
-                        </small>
+                    <div class="row g-4">
+                        <!-- Username Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-user-circle me-1 text-primary"></i>
+                                    Tên đăng nhập
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-at text-muted"></i>
+                                    </span>
+                                    {{ form.username }}
+                                </div>
+                                {% if form.username.errors %}
+                                <div class="text-danger small mt-2">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {{ form.username.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    150 ký tự hoặc ít hơn. Chỉ chữ cái, số và @/./+/-/_
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Email Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-envelope me-1 text-primary"></i>
+                                    Email
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-mail-bulk text-muted"></i>
+                                    </span>
+                                    {{ form.email }}
+                                </div>
+                                {% if form.email.errors %}
+                                <div class="text-danger small mt-2">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {{ form.email.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Email sẽ được dùng để khôi phục tài khoản
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Role Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.role.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-user-tag me-1 text-primary"></i>
+                                    Vai trò
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-users text-muted"></i>
+                                    </span>
+                                    {{ form.role }}
+                                </div>
+                                {% if form.role.errors %}
+                                <div class="text-danger small mt-2">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {{ form.role.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Chọn vai trò của bạn trong hệ thống
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Password 1 Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-key me-1 text-primary"></i>
+                                    Mật khẩu
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock text-muted"></i>
+                                    </span>
+                                    {{ form.password1 }}
+                                    <button type="button" class="input-group-text bg-white toggle-password">
+                                        <i class="fas fa-eye text-muted"></i>
+                                    </button>
+                                </div>
+                                {% if form.password1.errors %}
+                                <div class="text-danger small mt-2">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {{ form.password1.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    Mật khẩu phải có ít nhất 8 ký tự và không được quá đơn giản
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Password 2 Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-key me-1 text-primary"></i>
+                                    Xác nhận mật khẩu
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock text-muted"></i>
+                                    </span>
+                                    {{ form.password2 }}
+                                    <button type="button" class="input-group-text bg-white toggle-password">
+                                        <i class="fas fa-eye text-muted"></i>
+                                    </button>
+                                </div>
+                                {% if form.password2.errors %}
+                                <div class="text-danger small mt-2">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {{ form.password2.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    Nhập lại mật khẩu để xác nhận
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Terms and Conditions -->
+                        <div class="col-12">
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                <label class="form-check-label" for="termsCheck">
+                                    Tôi đồng ý với 
+                                    <a href="#" class="fw-bold">Điều khoản sử dụng</a> và 
+                                    <a href="#" class="fw-bold">Chính sách bảo mật</a>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="invalid-feedback">
+                                    Bạn phải đồng ý với điều khoản trước khi tiếp tục
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Actions -->
+                        <div class="col-12">
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-success btn-lg py-3">
+                                    <i class="fas fa-user-plus me-2"></i>
+                                    Đăng ký tài khoản
+                                </button>
+                                
+                                <div class="text-center">
+                                    <p class="mb-0">
+                                        <small class="text-muted">
+                                            Đã có tài khoản? 
+                                            <a href="{% url 'login' %}" class="fw-bold">
+                                                <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập ngay
+                                            </a>
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
+            </div>
+            
+            <div class="card-footer text-center py-3">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Mọi thông tin của bạn sẽ được bảo mật theo chính sách của hệ thống
+                </small>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    /* Thêm class cho form fields */
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    select {
-        display: block;
-        width: 100%;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #212529;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
+<script>
+    // Toggle password visibility for both password fields
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const inputId = this.closest('.form-group').querySelector('input').id;
+            const passwordInput = document.getElementById(inputId);
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
     
-    input:focus,
-    select:focus {
-        border-color: #86b7fe;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-</style>
+    // Form validation
+    (function () {
+        'use strict'
+        
+        var forms = document.querySelectorAll('.needs-validation')
+        
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+    
+    // Style form fields
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add Bootstrap classes to form fields
+        const formFields = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], select');
+        formFields.forEach(field => {
+            field.classList.add('form-control');
+            field.style.padding = '1rem 1.2rem';
+            field.style.borderRadius = '12px';
+            field.style.border = '2px solid #e0e0e0';
+        });
+    });
+</script>
 {% endblock %}

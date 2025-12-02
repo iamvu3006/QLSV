@@ -2,33 +2,131 @@
 {% block title %}Thêm sinh viên vào lớp{% endblock %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header bg-success text-white">
-        <h4 class="mb-0">Thêm sinh viên vào lớp {{ class_obj.ten_lop }}</h4>
-    </div>
-    <div class="card-body">
-        {% if available_students %}
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label">Chọn sinh viên:</label>
-                    <select name="student_id" class="form-select" required>
-                        <option value="">-- Chọn sinh viên --</option>
-                        {% for student in available_students %}
-                            <option value="{{ student.pk }}">{{ student.ma_sv }} - {{ student.ho_ten }}</option>
-                        {% endfor %}
-                    </select>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-success text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3">
+                            <i class="fas fa-user-plus fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1">Thêm sinh viên vào lớp</h4>
+                            <p class="mb-0 opacity-75">{{ class_obj.ten_lop }}</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-secondary">Hủy</a>
-                    <button type="submit" class="btn btn-success">Thêm</button>
+                
+                <div class="card-body p-5">
+                    {% if available_students %}
+                        <div class="form-container">
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold mb-3">
+                                        <i class="fas fa-users me-2 text-success"></i>Chọn sinh viên
+                                    </label>
+                                    <select name="student_id" class="form-select form-select-lg" required>
+                                        <option value="" selected disabled>-- Chọn sinh viên từ danh sách --</option>
+                                        {% for student in available_students %}
+                                            <option value="{{ student.pk }}">
+                                                {{ student.ma_sv }} - {{ student.ho_ten }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text mt-2">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Chọn một sinh viên từ danh sách có sẵn
+                                    </div>
+                                </div>
+                                
+                                <div class="available-count alert alert-light border mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-check me-3 text-success"></i>
+                                        <div>
+                                            <span class="fw-bold">{{ available_students|length }}</span> sinh viên có sẵn để thêm
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-5">
+                                    <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-outline-secondary btn-lg px-4">
+                                        <i class="fas fa-times me-2"></i>Hủy bỏ
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg px-4">
+                                        <i class="fas fa-check me-2"></i>Thêm sinh viên
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    {% else %}
+                        <!-- Empty State -->
+                        <div class="empty-state text-center py-5">
+                            <div class="empty-icon mb-4">
+                                <i class="fas fa-user-check fa-4x text-muted"></i>
+                            </div>
+                            <h4 class="text-muted mb-3">Tất cả sinh viên đã có trong lớp</h4>
+                            <p class="text-muted mb-4">Không còn sinh viên nào có sẵn để thêm vào lớp học này.</p>
+                            <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại chi tiết lớp
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
-            </form>
-        {% else %}
-            <p class="text-muted">Tất cả sinh viên đã có trong lớp này.</p>
-            <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-secondary">Quay lại</a>
-        {% endif %}
+            </div>
+        </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.header-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-select-lg {
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+}
+
+.form-select-lg:focus {
+    border-color: #43e97b;
+    box-shadow: 0 0 0 3px rgba(67, 233, 123, 0.2);
+}
+
+.empty-state {
+    padding: 40px;
+    border: 2px dashed #dee2e6;
+    border-radius: 15px;
+    background: #f8f9fa;
+}
+
+.empty-icon {
+    opacity: 0.5;
+}
+
+.btn-lg {
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+</style>
+{% endblock %}

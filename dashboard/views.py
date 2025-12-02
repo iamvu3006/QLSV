@@ -1,21 +1,30 @@
+# dashboard/views.py
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Avg, Count, Q
 from student.models import Student
 from classes.models import Class
 from grades.models import Grade, Subject, StudentGPA
+from teacher.models import TeacherNote
 from accounts.models import CustomUser
+import json
 
 
-def is_admin_or_teacher(user):
-    """Kiểm tra user là admin hoặc giáo viên"""
-    return user.is_authenticated and (user.role == 'admin' or user.role == 'teacher')
+def is_admin(user):
+    """Kiểm tra user là admin"""
+    return user.is_authenticated and user.role == 'admin'
+
+
+def is_teacher(user):
+    """Kiểm tra user là giáo viên"""
+    return user.is_authenticated and user.role == 'teacher'
 
 
 @login_required
-@user_passes_test(is_admin_or_teacher)
+@user_passes_test(is_admin)
 def dashboard_view(request):
-    """Dashboard tổng quan cho Admin/Teacher"""
+    """Dashboard tổng quan CHỈ DÀNH CHO ADMIN"""
     
     # 1. Thống kê tổng quan
     total_students = Student.objects.count()
@@ -56,13 +65,18 @@ def dashboard_view(request):
             avg_score = subject_grades.aggregate(Avg('diem_tong_ket'))['diem_tong_ket__avg']
             passed = subject_grades.filter(diem_tong_ket__gte=5.0).count()
             failed = subject_grades.filter(diem_tong_ket__lt=5.0).count()
+            total = subject_grades.count()
+            
+            # Tính tỉ lệ đạt (FIX LỖI Ở ĐÂY)
+            passed_ratio = (passed / total * 100) if total > 0 else 0
             
             subjects_stats.append({
                 'subject': subject,
                 'avg_score': round(avg_score, 2) if avg_score else 0,
                 'passed': passed,
                 'failed': failed,
-                'total': subject_grades.count()
+                'total': total,
+                'passed_ratio': round(passed_ratio, 1)  # Thêm passed_ratio
             })
     
     # Sắp xếp theo điểm trung bình giảm dần
@@ -70,11 +84,13 @@ def dashboard_view(request):
     
     # 5. Dữ liệu cho biểu đồ (Chart.js)
     # Biểu đồ phân bố điểm
-    grade_dist_A = grades_current.filter(diem_tong_ket__gte=8.5).count()
-    grade_dist_B = grades_current.filter(diem_tong_ket__gte=7.0, diem_tong_ket__lt=8.5).count()
-    grade_dist_C = grades_current.filter(diem_tong_ket__gte=5.5, diem_tong_ket__lt=7.0).count()
-    grade_dist_D = grades_current.filter(diem_tong_ket__gte=4.0, diem_tong_ket__lt=5.5).count()
-    grade_dist_F = grades_current.filter(diem_tong_ket__lt=4.0).count()
+    grade_distribution = {
+        "A (8.5-10)": grades_current.filter(diem_tong_ket__gte=8.5).count(),
+        "B (7.0-8.4)": grades_current.filter(diem_tong_ket__gte=7.0, diem_tong_ket__lt=8.5).count(),
+        "C (5.5-6.9)": grades_current.filter(diem_tong_ket__gte=5.5, diem_tong_ket__lt=7.0).count(),
+        "D (4.0-5.4)": grades_current.filter(diem_tong_ket__gte=4.0, diem_tong_ket__lt=5.5).count(),
+        "F (0-3.9)": grades_current.filter(diem_tong_ket__lt=4.0).count(),
+    }
     
     # 6. Thống kê theo lớp
     classes_stats = []
@@ -116,16 +132,12 @@ def dashboard_view(request):
         # Top sinh viên
         'top_students': top_students,
         
-        # Thống kê môn học
+        # Thống kê môn học (ĐÃ CÓ passed_ratio)
         'subjects_stats': subjects_stats,
         
         # Dữ liệu biểu đồ
-        'grade_dist_A': grade_dist_A,
-        'grade_dist_B': grade_dist_B,
-        'grade_dist_C': grade_dist_C,
-        'grade_dist_D': grade_dist_D,
-        'grade_dist_F': grade_dist_F,
-        'classes_stats': classes_stats,
+        'grade_distribution': grade_distribution,
+        'classes_stats': json.dumps(classes_stats),
         
         # Filter options
         'HOC_KY_CHOICES': Grade.HOC_KY_CHOICES,
@@ -133,6 +145,74 @@ def dashboard_view(request):
     
     return render(request, 'dashboard/dashboard.html', context)
 
+
+@login_required
+@user_passes_test(is_teacher)
+def teacher_dashboard_view(request):
+    """Dashboard CHỈ DÀNH CHO GIÁO VIÊN"""
+    teacher = request.user
+    
+    # 1. Lấy các lớp giáo viên phụ trách
+    classes = Class.objects.filter(giao_vien_chu_nhiem=teacher).prefetch_related('students')
+    
+    # 2. Thống kê tổng quan
+    total_classes = classes.count()
+    total_students = Student.objects.filter(classes__in=classes).distinct().count()
+    total_grades = Grade.objects.filter(
+        student__classes__in=classes
+    ).distinct().count()
+    total_notes = TeacherNote.objects.filter(teacher=teacher).count()
+    
+    # 3. Thống kê điểm trung bình theo lớp
+    class_stats = []
+    for class_obj in classes:
+        students_in_class = class_obj.students.all()
+        if students_in_class.exists():
+            grades = Grade.objects.filter(
+                student__in=students_in_class,
+                diem_tong_ket__isnull=False
+            )
+            avg_grade = grades.aggregate(Avg('diem_tong_ket'))['diem_tong_ket__avg']
+            
+            if avg_grade:
+                class_stats.append({
+                    'class_name': class_obj.ma_lop,
+                    'average_grade': round(avg_grade, 2)
+                })
+    
+    # 4. Top 5 sinh viên xuất sắc trong các lớp phụ trách
+    students_in_classes = Student.objects.filter(classes__in=classes).distinct()
+    top_students = StudentGPA.objects.filter(
+        student__in=students_in_classes,
+        gpa__isnull=False
+    ).select_related('student').order_by('-gpa')[:5]
+    
+    # 5. Sinh viên có GPA thấp cần quan tâm (GPA < 2.0)
+    low_gpa_students = StudentGPA.objects.filter(
+        student__in=students_in_classes,
+        gpa__lt=2.0,
+        gpa__isnull=False
+    ).select_related('student').order_by('gpa')[:5]
+    
+    # 6. Nhận xét gần đây
+    recent_notes = TeacherNote.objects.filter(
+        teacher=teacher
+    ).select_related('student', 'class_obj').order_by('-created_at')[:4]
+    
+    context = {
+        'teacher': teacher,
+        'classes': classes,
+        'total_classes': total_classes,
+        'total_students': total_students,
+        'total_grades': total_grades,
+        'total_notes': total_notes,
+        'class_stats': json.dumps(class_stats),
+        'top_students': top_students,
+        'low_gpa_students': low_gpa_students,
+        'recent_notes': recent_notes,
+    }
+    
+    return render(request, 'dashboard/teacher_dashboard.html', context)
 
 @login_required
 def student_dashboard_view(request):

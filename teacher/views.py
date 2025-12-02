@@ -1,3 +1,6 @@
+# teacher/views.py
+# ĐÃ XÓA teacher_dashboard - Dùng dashboard/views.py thay thế
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -13,16 +16,9 @@ def is_teacher(user):
     return user.is_authenticated and user.role == 'teacher'
 
 
-@login_required
-@user_passes_test(is_teacher)
-def teacher_dashboard(request):
-    """Dashboard của giáo viên"""
-    teacher = request.user
-    classes = Class.objects.filter(giao_vien_chu_nhiem=teacher).prefetch_related('students')
-    return render(request, 'teacher/dashboard.html', {
-        'teacher': teacher,
-        'classes': classes
-    })
+# ❌ ĐÃ XÓA teacher_dashboard - Dùng dashboard/views.py
+# def teacher_dashboard(request):
+#     ...
 
 
 @login_required
@@ -204,4 +200,3 @@ def teacher_note_delete(request, pk):
         'teacher': teacher,
         'note': note
     })
-

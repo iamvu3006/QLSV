@@ -1,32 +1,366 @@
 {% extends 'accounts/base_login.html' %}
-{% block title %}Xác nhận đăng xuất{% endblock %}
+{% block title %}Xác nhận đăng xuất - Hệ thống QLSV{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-header bg-warning text-dark text-center">
-                <h4 class="mb-0">⚠️ Xác nhận đăng xuất</h4>
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="card">
+            <div class="card-header bg-gradient-warning text-dark">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0"><i class="fas fa-sign-out-alt me-2"></i>Xác nhận đăng xuất</h4>
+                        <p class="mb-0 mt-2 opacity-75">Bạn sắp đăng xuất khỏi hệ thống QLSV</p>
+                    </div>
+                    <span class="badge bg-white text-dark fs-6">
+                        <i class="fas fa-exclamation-triangle me-1"></i>CẢNH BÁO
+                    </span>
+                </div>
             </div>
-            <div class="card-body text-center p-4">
-                <p class="mb-3">Bạn có chắc chắn muốn đăng xuất?</p>
-                <p class="text-muted">
-                    Đang đăng nhập với: <strong>{{ user.username }}</strong>
-                    <br>
-                    <small>Vai trò: {{ user.get_role_display }}</small>
-                </p>
+            
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <!-- Left Side: User Info & Warning -->
+                    <div class="col-lg-7">
+                        <div class="p-4">
+                            <!-- Warning Alert -->
+                            <div class="alert alert-warning bg-warning bg-opacity-10 border-warning border-3 mb-4">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h4 class="alert-heading mb-2">Bạn có chắc chắn muốn đăng xuất?</h4>
+                                        <p class="mb-2">Hệ thống sẽ kết thúc phiên làm việc hiện tại của bạn. Mọi thay đổi chưa lưu sẽ bị mất.</p>
+                                        <hr>
+                                        <p class="mb-0 fw-semibold">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Phiên hiện tại: {{ user.last_login|date:"H:i"|default:"Chưa xác định" }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- User Info Card -->
+                            <div class="card border-primary border-2">
+                                <div class="card-header bg-primary bg-opacity-10 text-primary">
+                                    <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Thông tin tài khoản</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
+                                                    <i class="fas fa-user fa-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Tài khoản</div>
+                                                    <div class="h5 fw-bold text-primary">{{ user.username }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 me-3">
+                                                    <i class="fas fa-user-tag fa-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Vai trò</div>
+                                                    <div class="h5 fw-bold text-info">{{ user.get_role_display }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
+                                                    <i class="fas fa-envelope fa-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Email</div>
+                                                    <div class="h5 fw-bold text-success">{{ user.email|default:"Chưa cập nhật" }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 me-3">
+                                                    <i class="fas fa-calendar-alt fa-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-muted small">Tham gia từ</div>
+                                                    <div class="h5 fw-bold text-warning">{{ user.date_joined|date:"d/m/Y" }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side: Actions & Consequences -->
+                    <div class="col-lg-5">
+                        <div class="p-4 bg-light rounded h-100">
+                            <!-- Avatar & Quick Info -->
+                            <div class="text-center mb-4">
+                                <div class="avatar-circle mb-3" style="width: 120px; height: 120px; margin: 0 auto;">
+                                    <i class="fas fa-user-shield fa-2x"></i>
+                                </div>
+                                <h5 class="fw-bold">{{ user.username }}</h5>
+                                <p class="text-muted mb-4">Đang đăng nhập vào hệ thống</p>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="mb-5">
+                                <h6 class="fw-bold mb-3 text-center">
+                                    <i class="fas fa-hand-pointer me-2 text-primary"></i>
+                                    Chọn hành động
+                                </h6>
+                                <div class="d-grid gap-3">
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-lg w-100 py-3">
+                                            <i class="fas fa-sign-out-alt me-2"></i>
+                                            <strong>ĐĂNG XUẤT NGAY</strong>
+                                        </button>
+                                    </form>
+                                    
+                                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg w-100 py-3">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Quay lại trang trước
+                                    </a>
+                                    
+                                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-lg w-100 py-3">
+                                        <i class="fas fa-tachometer-alt me-2"></i>
+                                        Về Dashboard
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Consequences Warning -->
+                            <div class="border-top pt-4">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="fas fa-exclamation-circle me-2 text-warning"></i>
+                                    Hậu quả khi đăng xuất
+                                </h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="bg-white p-3 rounded text-center">
+                                            <i class="fas fa-save text-danger mb-2"></i>
+                                            <p class="small mb-0">Công việc chưa lưu sẽ bị mất</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-white p-3 rounded text-center">
+                                            <i class="fas fa-lock text-danger mb-2"></i>
+                                            <p class="small mb-0">Phiên làm việc bị đóng</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-white p-3 rounded text-center">
+                                            <i class="fas fa-redo text-danger mb-2"></i>
+                                            <p class="small mb-0">Cần đăng nhập lại</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-white p-3 rounded text-center">
+                                            <i class="fas fa-clock text-danger mb-2"></i>
+                                            <p class="small mb-0">Thời gian thiết lập lại</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
-                <form method="post" action="{% url 'logout' %}" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger me-2">
-                        ✅ Đăng xuất
-                    </button>
-                </form>
-                <a href="javascript:history.back()" class="btn btn-secondary">
-                    ❌ Hủy
-                </a>
+                <!-- Bottom Warning -->
+                <div class="mt-4 pt-4 border-top">
+                    <div class="alert alert-info border-0 bg-info bg-opacity-10">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-shield-alt fa-2x text-info me-3"></i>
+                            <div>
+                                <h6 class="alert-heading mb-2">Lưu ý bảo mật</h6>
+                                <p class="mb-0">
+                                    <strong>Khuyến nghị:</strong> Luôn đăng xuất khi rời khỏi máy tính, 
+                                    đặc biệt trên các thiết bị dùng chung. 
+                                    <a href="#" class="fw-bold">Tìm hiểu thêm về bảo mật tài khoản</a>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer text-center py-3">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Phiên bản 2.0 | Thời gian hệ thống: {% now "H:i d/m/Y" %}
+                </small>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #ffd166, #ff9e00);
+    }
+    
+    .avatar-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        border: 4px solid white;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .border-3 {
+        border-width: 3px !important;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    .btn-lg {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .h-100 {
+        min-height: 100%;
+    }
+    
+    /* Desktop Optimizations */
+    @media (min-width: 992px) {
+        .card-body {
+            padding: 2.5rem !important;
+        }
+        
+        .p-4 {
+            padding: 2rem !important;
+        }
+        
+        .btn-lg {
+            padding: 1rem 1.5rem !important;
+        }
+        
+        /* Smooth hover effects for desktop */
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-circle {
+            transition: transform 0.3s ease;
+        }
+        
+        .avatar-circle:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Desktop-specific spacing */
+        .mb-5 {
+            margin-bottom: 3rem !important;
+        }
+        
+        .pt-4 {
+            padding-top: 2rem !important;
+        }
+    }
+    
+    /* Animation for warning icon */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .fa-exclamation-triangle {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Better contrast for desktop */
+    .text-primary {
+        color: #4361ee !important;
+    }
+    
+    .text-info {
+        color: #118ab2 !important;
+    }
+    
+    .text-success {
+        color: #06d6a0 !important;
+    }
+    
+    .text-warning {
+        color: #ff9e00 !important;
+    }
+    
+    .text-danger {
+        color: #ef476f !important;
+    }
+    
+    /* Enhanced card shadows for desktop */
+    .card {
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .card.border-primary {
+        box-shadow: 0 10px 30px rgba(67, 97, 238, 0.1) !important;
+    }
+</style>
+
+<script>
+    // Add some interactive effects for desktop
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effect to user info cards
+        const userInfoCards = document.querySelectorAll('.d-flex.align-items-center.mb-3');
+        userInfoCards.forEach(card => {
+            card.style.cursor = 'pointer';
+            card.style.transition = 'all 0.2s ease';
+            
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+                this.style.backgroundColor = 'rgba(0, 0, 0, 0.02)';
+                this.style.borderRadius = '10px';
+                this.style.padding = '0.5rem';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+                this.style.backgroundColor = '';
+                this.style.padding = '';
+            });
+        });
+        
+        // Add confirmation for logout button
+        const logoutBtn = document.querySelector('button[type="submit"]');
+        logoutBtn.addEventListener('click', function(e) {
+            if (!confirm('Bạn có CHẮC CHẮN muốn đăng xuất khỏi hệ thống?')) {
+                e.preventDefault();
+            }
+        });
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // ESC to go back
+            if (e.key === 'Escape') {
+                history.back();
+            }
+            // Enter to confirm logout (with confirmation)
+            if (e.key === 'Enter' && document.activeElement !== logoutBtn) {
+                e.preventDefault();
+                logoutBtn.click();
+            }
+        });
+    });
+</script>
 {% endblock %}

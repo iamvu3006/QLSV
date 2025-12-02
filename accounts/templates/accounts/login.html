@@ -1,82 +1,204 @@
 {% extends 'accounts/base_login.html' %}
-{% block title %}Đăng nhập - QLSV{% endblock %}
+{% block title %}Đăng nhập - Hệ thống QLSV{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0">📚 Đăng Nhập QLSV</h4>
-            </div>
-            <div class="card-body p-4">
-                <!-- Hiển thị messages -->
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="row align-items-center">
+            <!-- Brand Info Section -->
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="brand-logo">
+                    <div class="mb-4">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1>Hệ thống QLSV</h1>
+                    <p class="lead">Quản lý sinh viên chuyên nghiệp</p>
+                    <div class="mt-5">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="text-white p-3 rounded" style="background: rgba(255, 255, 255, 0.15);">
+                                    <i class="fas fa-users fa-2x mb-3"></i>
+                                    <h5>Quản lý sinh viên</h5>
+                                    <p class="small opacity-75">Tổ chức và quản lý thông tin sinh viên</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-white p-3 rounded" style="background: rgba(255, 255, 255, 0.15);">
+                                    <i class="fas fa-chart-line fa-2x mb-3"></i>
+                                    <h5>Theo dõi học tập</h5>
+                                    <p class="small opacity-75">Phân tích và đánh giá kết quả học tập</p>
+                                </div>
+                            </div>
                         </div>
-                    {% endfor %}
-                {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Login Form Section -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Đăng nhập hệ thống</h4>
+                        <p class="mb-0 mt-2 opacity-75">Vui lòng nhập thông tin đăng nhập của bạn</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Messages -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'danger' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
+                                        <div>{{ message }}</div>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Tên đăng nhập</label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="username" 
-                            name="username" 
-                            placeholder="Nhập tên đăng nhập"
-                            required
-                            autofocus
-                        >
+                        <!-- Login Form -->
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label for="username" class="form-label">
+                                    <i class="fas fa-user me-1 text-primary"></i>
+                                    Tên đăng nhập
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user-circle text-muted"></i>
+                                    </span>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="username" 
+                                        name="username" 
+                                        placeholder="Nhập tên đăng nhập"
+                                        required
+                                        autofocus
+                                    >
+                                </div>
+                                <div class="form-text">Tên đăng nhập của bạn trong hệ thống</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock me-1 text-primary"></i>
+                                    Mật khẩu
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-key text-muted"></i>
+                                    </span>
+                                    <input 
+                                        type="password" 
+                                        class="form-control" 
+                                        id="password" 
+                                        name="password" 
+                                        placeholder="Nhập mật khẩu"
+                                        required
+                                    >
+                                    <button type="button" class="input-group-text bg-white" id="togglePassword">
+                                        <i class="fas fa-eye text-muted"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">Mật khẩu bảo mật tài khoản của bạn</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg py-3">
+                                    <i class="fas fa-sign-in-alt me-2"></i>
+                                    Đăng nhập
+                                </button>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <p class="mb-0">
+                                    <small class="text-muted">
+                                        Chưa có tài khoản? 
+                                        <a href="{% url 'register' %}" class="fw-bold">
+                                            <i class="fas fa-user-plus me-1"></i>Đăng ký ngay
+                                        </a>
+                                    </small>
+                                </p>
+                            </div>
+                        </form>
+                        
+                        <!-- Divider -->
+                        <div class="position-relative my-4">
+                            <hr>
+                            <div class="position-absolute top-50 start-50 translate-middle bg-white px-3">
+                                <small class="text-muted">HOẶC</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Demo Accounts -->
+                        <div class="demo-info">
+                            <h6><i class="fas fa-key me-2"></i>Tài khoản demo thử nghiệm</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="d-flex justify-content-between">
+                                    <span><strong>Quản trị viên:</strong> admin</span>
+                                    <span class="badge bg-primary">admin123</span>
+                                </li>
+                                <li class="d-flex justify-content-between">
+                                    <span><strong>Giáo viên:</strong> teacher1</span>
+                                    <span class="badge bg-info">teacher123</span>
+                                </li>
+                                <li class="d-flex justify-content-between">
+                                    <span><strong>Sinh viên:</strong> student1</span>
+                                    <span class="badge bg-success">student123</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Mật khẩu</label>
-                        <input 
-                            type="password" 
-                            class="form-control" 
-                            id="password" 
-                            name="password" 
-                            placeholder="Nhập mật khẩu"
-                            required
-                        >
-                    </div>
-                    
-                    <div class="d-grid mb-3">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            🔐 Đăng nhập
-                        </button>
-                    </div>
-                    
-                    <div class="text-center">
+                    <div class="card-footer text-center py-3">
                         <small class="text-muted">
-                            Chưa có tài khoản? 
-                            <a href="{% url 'register' %}" class="text-decoration-none">Đăng ký ngay</a>
+                            <i class="fas fa-copyright me-1"></i>
+                            2025 Hệ thống Quản lý Sinh viên | Phiên bản 2.0
                         </small>
                     </div>
-                </form>
-            </div>
-            <div class="card-footer text-center text-muted">
-                <small>© 2025 QLSV - Quản lý sinh viên</small>
-            </div>
-        </div>
-
-        <!-- Box thông tin demo -->
-        <div class="card mt-3 bg-light">
-            <div class="card-body">
-                <h6 class="card-title">🔑 Tài khoản demo:</h6>
-                <ul class="list-unstyled mb-0 small">
-                    <li><strong>Admin:</strong> admin / admin123</li>
-                    <li><strong>Giáo viên:</strong> teacher1 / teacher123</li>
-                    <li><strong>Sinh viên:</strong> student1 / student123</li>
-                </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const icon = this.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+    
+    // Form validation
+    (function () {
+        'use strict'
+        
+        var forms = document.querySelectorAll('.needs-validation')
+        
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
 {% endblock %}

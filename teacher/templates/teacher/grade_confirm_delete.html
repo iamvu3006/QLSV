@@ -2,24 +2,159 @@
 {% block title %}Xóa điểm số{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0">Xác nhận xóa điểm số</h4>
+<div class="row justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-gradient-danger text-white py-3">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="avatar-circle-sm bg-white bg-opacity-20 me-3">
+                            <i class="fas fa-times-circle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h4 class="mb-0">Xác nhận xóa điểm số</h4>
+                        <small class="opacity-75">Hành động này sẽ xóa bản ghi điểm vĩnh viễn</small>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <p>Bạn có chắc chắn muốn xóa điểm của <strong>{{ grade.student.ho_ten }}</strong> - môn <strong>{{ grade.subject.ten_mon }}</strong>?</p>
+            <div class="card-body p-4 text-center">
+                <div class="warning-icon mb-4">
+                    <div class="avatar-circle bg-danger bg-opacity-10 text-danger mx-auto" style="width: 80px; height: 80px;">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+                
+                <h5 class="mb-3">Xóa điểm số của sinh viên?</h5>
+                
+                <div class="card border mb-4">
+                    <div class="card-body text-start">
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted">Sinh viên:</small>
+                                <p class="mb-0 fw-semibold">
+                                    <i class="fas fa-user-graduate me-2 text-primary"></i>
+                                    {{ grade.student.ho_ten }}
+                                </p>
+                                <small class="text-muted">
+                                    <i class="fas fa-id-card me-1"></i>{{ grade.student.ma_sv }}
+                                </small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <small class="text-muted">Môn học:</small>
+                                <p class="mb-0 fw-semibold">
+                                    <i class="fas fa-book me-2 text-info"></i>
+                                    {{ grade.subject.ten_mon }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">Điểm QT:</small>
+                                <p class="mb-0 fw-bold fs-5 {% if grade.diem_qua_trinh >= 5.0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ grade.diem_qua_trinh|default:"-" }}
+                                </p>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">Điểm GK:</small>
+                                <p class="mb-0 fw-bold fs-5 {% if grade.diem_giua_ky >= 5.0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ grade.diem_giua_ky|default:"-" }}
+                                </p>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <small class="text-muted">Điểm CK:</small>
+                                <p class="mb-0 fw-bold fs-5 {% if grade.diem_cuoi_ky >= 5.0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ grade.diem_cuoi_ky|default:"-" }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Điểm tổng kết:</small>
+                                <p class="mb-0 fw-bold fs-4 {% if grade.diem_tong_ket >= 5.0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ grade.diem_tong_ket|default:"-" }}
+                                </p>
+                            </div>
+                            {% if grade.diem_tong_ket %}
+                                <span class="badge {% if grade.diem_tong_ket >= 8.5 %}bg-success
+                                                  {% elif grade.diem_tong_ket >= 7.0 %}bg-info
+                                                  {% elif grade.diem_tong_ket >= 5.0 %}bg-warning
+                                                  {% else %}bg-danger{% endif %} px-3 py-2">
+                                    {% if grade.diem_tong_ket >= 8.5 %}Xuất sắc
+                                    {% elif grade.diem_tong_ket >= 7.0 %}Khá
+                                    {% elif grade.diem_tong_ket >= 5.0 %}Trung bình
+                                    {% else %}Yếu{% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-danger" role="alert">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="alert-heading">Cảnh báo quan trọng!</h6>
+                            <p class="mb-0 small">Điểm số sau khi xóa sẽ không thể khôi phục. Hành động này sẽ ảnh hưởng đến điểm trung bình của sinh viên.</p>
+                        </div>
+                    </div>
+                </div>
+                
                 <form method="post">
                     {% csrf_token %}
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{% url 'teacher_student_grades' grade.student.pk %}" class="btn btn-secondary">Hủy</a>
-                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="{% url 'teacher_student_grades' grade.student.pk %}" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="fas fa-trash-alt me-2"></i>Xóa điểm số
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, var(--danger-color), #dc3545);
+    }
+    
+    .avatar-circle {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .avatar-circle-sm {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .warning-icon {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .shadow-lg {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+</style>
+{% endblock %}
