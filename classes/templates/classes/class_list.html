@@ -7,14 +7,80 @@
     <div class="page-header mb-5">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="h2 mb-2">Danh sách lớp học</h1>
-                <p class="text-muted">Quản lý tất cả các lớp học trong hệ thống</p>
+                <h1 class="h2 mb-2">
+                    {% if user_role == 'teacher' %}
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Lớp học phụ trách
+                    {% else %}
+                        <i class="fas fa-school me-2"></i>Danh sách lớp học
+                    {% endif %}
+                </h1>
+                <p class="text-muted">
+                    {% if user_role == 'teacher' %}
+                        Quản lý các lớp học bạn đang phụ trách
+                    {% else %}
+                        Quản lý tất cả các lớp học trong hệ thống
+                    {% endif %}
+                </p>
             </div>
-            <a href="{% url 'class_create' %}" class="btn btn-primary btn-lg px-4">
-                <i class="fas fa-plus-circle me-2"></i>Thêm lớp học
-            </a>
+            
+            <!-- Action buttons -->
+            <div class="d-flex gap-2">
+                {% if user_role == 'admin' %}
+                    <a href="{% url 'class_create' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-plus-circle me-2"></i>Thêm lớp học
+                    </a>
+                {% elif user_role == 'teacher' %}
+                    <a href="{% url 'class_create' %}" class="btn btn-success btn-lg px-4">
+                        <i class="fas fa-plus-circle me-2"></i>Tạo lớp học
+                    </a>
+                    <a href="{% url 'teacher_note_list' %}" class="btn btn-outline-info btn-lg px-4">
+                        <i class="fas fa-comments me-2"></i>Nhận xét
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
+
+    <!-- Statistics Summary (cho teacher) -->
+    {% if user_role == 'teacher' and classes %}
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stat-card bg-primary text-white">
+                    <div class="stat-icon">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <div class="stat-content">
+                        <small class="opacity-75">Tổng số lớp</small>
+                        <h3 class="mb-0">{{ classes|length }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card bg-success text-white">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-content">
+                        <small class="opacity-75">Tổng sinh viên</small>
+                        <h3 class="mb-0">
+                            {% widthratio classes|length 1 30 %}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card bg-info text-white">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <small class="opacity-75">Năm học</small>
+                        <h3 class="mb-0">{{ classes.0.nam_hoc|default:"2024-2025" }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
     <!-- Class Grid -->
     {% if classes %}
@@ -36,16 +102,20 @@
                         </div>
                         <div class="card-body p-4">
                             <div class="class-info mb-4">
-                                <div class="info-row mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-user-tie me-3 text-primary"></i>
-                                        <div>
-                                            <small class="text-muted d-block">Giáo viên chủ nhiệm</small>
-                                            <span class="fw-medium">{{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}</span>
+                                <!-- Giáo viên chủ nhiệm -->
+                                {% if user_role == 'admin' %}
+                                    <div class="info-row mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-user-tie me-3 text-primary"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Giáo viên chủ nhiệm</small>
+                                                <span class="fw-medium">{{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                {% endif %}
                                 
+                                <!-- Statistics -->
                                 <div class="row">
                                     <div class="col-6">
                                         <div class="stat-card p-3 text-center rounded">
@@ -62,6 +132,7 @@
                                 </div>
                             </div>
                             
+                            <!-- Actions -->
                             <div class="d-flex justify-content-between pt-3 border-top">
                                 <a href="{% url 'class_detail' class_obj.pk %}" class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-eye me-1"></i>Chi tiết
@@ -70,9 +141,11 @@
                                     <a href="{% url 'class_update' class_obj.pk %}" class="btn btn-outline-warning btn-sm">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{% url 'class_delete' class_obj.pk %}" class="btn btn-outline-danger btn-sm">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                    {% if user_role == 'admin' %}
+                                        <a href="{% url 'class_delete' class_obj.pk %}" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -87,10 +160,23 @@
                 <div class="empty-state-icon mb-4">
                     <i class="fas fa-chalkboard-teacher fa-4x text-muted"></i>
                 </div>
-                <h3 class="h4 text-muted mb-3">Chưa có lớp học nào</h3>
-                <p class="text-muted mb-4">Bắt đầu bằng cách tạo lớp học đầu tiên của bạn</p>
+                <h3 class="h4 text-muted mb-3">
+                    {% if user_role == 'teacher' %}
+                        Bạn chưa phụ trách lớp nào
+                    {% else %}
+                        Chưa có lớp học nào
+                    {% endif %}
+                </h3>
+                <p class="text-muted mb-4">
+                    {% if user_role == 'teacher' %}
+                        Liên hệ với quản trị viên để được phân công lớp học hoặc tạo lớp mới
+                    {% else %}
+                        Bắt đầu bằng cách tạo lớp học đầu tiên của bạn
+                    {% endif %}
+                </p>
                 <a href="{% url 'class_create' %}" class="btn btn-primary btn-lg px-4">
-                    <i class="fas fa-plus-circle me-2"></i>Tạo lớp học đầu tiên
+                    <i class="fas fa-plus-circle me-2"></i>
+                    {% if user_role == 'teacher' %}Tạo lớp học{% else %}Tạo lớp học đầu tiên{% endif %}
                 </a>
             </div>
         </div>
@@ -155,6 +241,26 @@
 
 .hover-lift:hover {
     transform: translateY(-5px);
+}
+
+/* Teacher stat cards */
+.stat-card.bg-primary,
+.stat-card.bg-success,
+.stat-card.bg-info {
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+    opacity: 0.8;
+}
+
+.stat-content {
+    flex-grow: 1;
 }
 </style>
 {% endblock %}

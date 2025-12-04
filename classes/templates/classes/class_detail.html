@@ -3,6 +3,20 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    {% if user_role == 'teacher' %}
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'class_list' %}">
+                        <i class="fas fa-chalkboard-teacher"></i> Lớp phụ trách
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ class_obj.ma_lop }}</li>
+            </ol>
+        </nav>
+    {% endif %}
+
     <div class="row">
         <div class="col-lg-8 mx-auto">
             <!-- Header Card -->
@@ -13,7 +27,9 @@
                             <h4 class="mb-1">{{ class_obj.ma_lop }}</h4>
                             <h2 class="h4 mb-0">{{ class_obj.ten_lop }}</h2>
                         </div>
-                        <span class="badge bg-light text-dark fs-6 px-3 py-2 rounded-pill">{{ class_obj.get_student_count }} sinh viên</span>
+                        <span class="badge bg-light text-dark fs-6 px-3 py-2 rounded-pill">
+                            {{ class_obj.get_student_count }} sinh viên
+                        </span>
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -24,7 +40,9 @@
                                     <i class="fas fa-chalkboard-teacher me-3 text-primary fs-5"></i>
                                     <div>
                                         <p class="text-muted mb-0">Giáo viên chủ nhiệm</p>
-                                        <p class="fw-bold mb-0">{{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}</p>
+                                        <p class="fw-bold mb-0">
+                                            {{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -49,6 +67,14 @@
                         <a href="{% url 'class_add_student' class_obj.pk %}" class="btn btn-success px-4">
                             <i class="fas fa-user-plus me-2"></i>Thêm sinh viên
                         </a>
+                        
+                        <!-- Nút xóa chỉ hiện với admin -->
+                        {% if user_role == 'admin' %}
+                            <a href="{% url 'class_delete' class_obj.pk %}" class="btn btn-danger px-4">
+                                <i class="fas fa-trash me-2"></i>Xóa lớp
+                            </a>
+                        {% endif %}
+                        
                         <a href="{% url 'class_list' %}" class="btn btn-outline-secondary px-4">
                             <i class="fas fa-arrow-left me-2"></i>Quay lại
                         </a>
@@ -82,7 +108,9 @@
                                     {% for student in students %}
                                         <tr class="border-top">
                                             <td class="ps-4">
-                                                <span class="badge bg-primary rounded-pill px-3 py-1">{{ student.ma_sv }}</span>
+                                                <span class="badge bg-primary rounded-pill px-3 py-1">
+                                                    {{ student.ma_sv }}
+                                                </span>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -98,10 +126,32 @@
                                                 </a>
                                             </td>
                                             <td class="text-end pe-4">
-                                                <a href="{% url 'class_remove_student' class_obj.pk student.pk %}" 
-                                                   class="btn btn-sm btn-outline-danger">
-                                                    <i class="fas fa-user-minus me-1"></i>Xóa
-                                                </a>
+                                                <div class="btn-group" role="group">
+                                                    <!-- Xem điểm -->
+                                                    {% if user_role == 'teacher' %}
+                                                        <a href="{% url 'teacher_student_grades' student.pk %}" 
+                                                           class="btn btn-sm btn-outline-info"
+                                                           data-bs-toggle="tooltip"
+                                                           title="Xem điểm">
+                                                            <i class="fas fa-chart-line"></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'grade_list' %}?student={{ student.pk }}" 
+                                                           class="btn btn-sm btn-outline-info"
+                                                           data-bs-toggle="tooltip"
+                                                           title="Xem điểm">
+                                                            <i class="fas fa-chart-line"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                    
+                                                    <!-- Xóa khỏi lớp -->
+                                                    <a href="{% url 'class_remove_student' class_obj.pk student.pk %}" 
+                                                       class="btn btn-sm btn-outline-danger"
+                                                       data-bs-toggle="tooltip"
+                                                       title="Xóa khỏi lớp">
+                                                        <i class="fas fa-user-minus"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -180,5 +230,30 @@
     font-size: 0.85rem;
     letter-spacing: 0.5px;
 }
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.75rem 0;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: var(--bs-primary);
+}
+
+.breadcrumb-item.active {
+    color: var(--bs-secondary);
+    font-weight: 500;
+}
 </style>
+
+<script>
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
 {% endblock %}

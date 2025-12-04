@@ -3,79 +3,177 @@
 
 {% block content %}
 <div class="container-fluid py-5">
+    <!-- Breadcrumb (cho teacher) -->
+    {% if user.role == 'teacher' %}
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'class_list' %}">
+                        <i class="fas fa-chalkboard-teacher"></i> Lớp học
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'teacher_student_grades' grade.student.pk %}">
+                        <i class="fas fa-chart-line"></i> Điểm số
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Xóa điểm</li>
+            </ol>
+        </nav>
+    {% endif %}
+
     <div class="row justify-content-center">
-        <div class="col-lg-5">
+        <div class="col-lg-6 col-md-8">
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-gradient-danger text-white py-4 text-center">
                     <div class="warning-icon mb-3">
                         <i class="fas fa-trash-alt fa-3x"></i>
                     </div>
                     <h4 class="mb-0">Xác nhận xóa điểm số</h4>
+                    <small class="opacity-75">Hành động này không thể hoàn tác</small>
                 </div>
                 
                 <div class="card-body p-5">
                     <div class="confirmation-content text-center">
+                        <!-- Grade info card -->
                         <div class="grade-info mb-4 p-4 bg-light rounded">
-                            <div class="row">
+                            <div class="row g-3">
+                                <!-- Student info -->
                                 <div class="col-6">
-                                    <div class="info-card p-3 text-center">
+                                    <div class="info-card p-3 bg-white rounded shadow-sm h-100">
                                         <div class="avatar-circle mx-auto mb-3">
                                             <span class="initials">{{ grade.student.ho_ten|slice:":1" }}</span>
                                         </div>
                                         <h6 class="fw-bold mb-1">{{ grade.student.ho_ten }}</h6>
-                                        <small class="text-muted">{{ grade.student.ma_sv }}</small>
+                                        <small class="text-muted d-block">{{ grade.student.ma_sv }}</small>
+                                        <span class="badge bg-primary mt-2">
+                                            <i class="fas fa-user-graduate me-1"></i>Sinh viên
+                                        </span>
                                     </div>
                                 </div>
+                                
+                                <!-- Subject info -->
                                 <div class="col-6">
-                                    <div class="info-card p-3 text-center">
+                                    <div class="info-card p-3 bg-white rounded shadow-sm h-100">
                                         <div class="subject-icon mx-auto mb-3">
                                             <i class="fas fa-book"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">{{ grade.subject.ten_mon }}</h6>
-                                        <small class="text-muted">{{ grade.subject.ma_mon }}</small>
+                                        <small class="text-muted d-block">{{ grade.subject.ma_mon }}</small>
+                                        <span class="badge bg-info mt-2">
+                                            <i class="fas fa-graduation-cap me-1"></i>{{ grade.subject.so_tin_chi }} tín chỉ
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                             
+                            <!-- Grade details -->
                             <div class="grade-details mt-4 p-3 bg-white rounded border">
-                                <div class="row">
-                                    <div class="col-4 text-center">
-                                        <div class="text-muted mb-1">Học kỳ</div>
-                                        <div class="fw-bold text-info">HK{{ grade.hoc_ky }}</div>
+                                <div class="row text-center">
+                                    <div class="col-3">
+                                        <small class="text-muted d-block mb-1">Học kỳ</small>
+                                        <div class="badge bg-warning text-dark">HK{{ grade.hoc_ky }}</div>
                                     </div>
-                                    <div class="col-4 text-center">
-                                        <div class="text-muted mb-1">Năm học</div>
+                                    <div class="col-3">
+                                        <small class="text-muted d-block mb-1">Năm học</small>
                                         <div class="fw-bold">{{ grade.nam_hoc }}</div>
                                     </div>
-                                    <div class="col-4 text-center">
-                                        <div class="text-muted mb-1">Điểm tổng kết</div>
-                                        <div class="fw-bold fs-5 text-success">{{ grade.diem_tong_ket|default:"-" }}</div>
+                                    <div class="col-3">
+                                        <small class="text-muted d-block mb-1">Điểm TK</small>
+                                        <div class="fw-bold fs-5 {% if grade.diem_tong_ket >= 5.0 %}text-success{% else %}text-danger{% endif %}">
+                                            {{ grade.diem_tong_ket|default:"-" }}
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <small class="text-muted d-block mb-1">Xếp loại</small>
+                                        {% if grade.diem_tong_ket %}
+                                            <span class="badge {% if grade.diem_tong_ket >= 8.5 %}bg-success
+                                                          {% elif grade.diem_tong_ket >= 7.0 %}bg-info
+                                                          {% elif grade.diem_tong_ket >= 5.0 %}bg-warning
+                                                          {% else %}bg-danger{% endif %}">
+                                                {{ grade.get_letter_grade }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">-</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Detail scores -->
+                                <div class="row mt-3 pt-3 border-top">
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Quá trình</small>
+                                        <div class="fw-semibold">{{ grade.diem_qua_trinh|default:"-" }}</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Giữa kỳ</small>
+                                        <div class="fw-semibold">{{ grade.diem_giua_ky|default:"-" }}</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted d-block">Cuối kỳ</small>
+                                        <div class="fw-semibold">{{ grade.diem_cuoi_ky|default:"-" }}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="alert alert-warning border-warning">
-                            <div class="d-flex">
-                                <i class="fas fa-exclamation-circle me-3 mt-1"></i>
-                                <div>
-                                    <p class="mb-0 fw-bold">Bạn đang xóa điểm số của:</p>
-                                    <p class="mb-0 text-danger fw-bold">{{ grade.student.ho_ten }} - {{ grade.subject.ten_mon }}</p>
+                        <!-- Warning alert -->
+                        <div class="alert alert-danger border-danger">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-exclamation-triangle me-3 mt-1 fs-4"></i>
+                                <div class="text-start">
+                                    <h6 class="alert-heading mb-2">Cảnh báo quan trọng!</h6>
+                                    <ul class="mb-0 ps-3">
+                                        <li>Điểm số sau khi xóa <strong>không thể khôi phục</strong></li>
+                                        <li>Điểm GPA của sinh viên sẽ được <strong>tính lại tự động</strong></li>
+                                        <li>Thao tác này sẽ được <strong>ghi nhận vào hệ thống</strong></li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                         
-                        <form method="post" class="mt-4">
+                        <!-- Confirmation text -->
+                        <div class="confirmation-text mb-4 p-3 bg-light rounded">
+                            <p class="mb-2 fw-bold text-dark">Bạn đang xóa điểm số:</p>
+                            <p class="mb-0 text-danger fw-bold fs-5">
+                                {{ grade.student.ho_ten }} - {{ grade.subject.ten_mon }}
+                            </p>
+                            <small class="text-muted">HK{{ grade.hoc_ky }} - {{ grade.nam_hoc }}</small>
+                        </div>
+                        
+                        <!-- Action buttons -->
+                        <form method="post">
                             {% csrf_token %}
                             <div class="d-grid gap-3">
                                 <button type="submit" class="btn btn-danger btn-lg py-3">
-                                    <i class="fas fa-trash me-2"></i>Xác nhận xóa
+                                    <i class="fas fa-trash-alt me-2"></i>Xác nhận xóa vĩnh viễn
                                 </button>
-                                <a href="{% url 'grade_list' %}" class="btn btn-outline-secondary btn-lg py-3">
+                                <a href="{% if user.role == 'teacher' %}{% url 'teacher_student_grades' grade.student.pk %}{% else %}{% url 'grade_list' %}{% endif %}" 
+                                   class="btn btn-outline-secondary btn-lg py-3">
                                     <i class="fas fa-times me-2"></i>Hủy bỏ
                                 </a>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional info -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle text-info fa-lg"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <small class="text-muted">
+                                {% if user.role == 'teacher' %}
+                                    <strong>Lưu ý cho giáo viên:</strong> Sau khi xóa, bạn có thể nhập lại điểm cho sinh viên này nếu cần.
+                                {% else %}
+                                    <strong>Thông tin:</strong> Hệ thống sẽ tự động cập nhật GPA và thống kê sau khi xóa.
+                                {% endif %}
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,11 +195,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
 .avatar-circle {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 50%;
     display: flex;
@@ -109,19 +213,19 @@
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 20px;
 }
 
 .subject-icon {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 20px;
+    font-size: 24px;
 }
 
 .info-card {
@@ -129,8 +233,8 @@
 }
 
 .info-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
 }
 
 .card {
@@ -141,6 +245,32 @@
 .btn-lg {
     border-radius: 10px;
     font-weight: 500;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+.confirmation-text {
+    border-left: 4px solid var(--bs-danger);
+}
+
+.grade-details {
+    transition: all 0.3s;
+}
+
+.grade-details:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.75rem 0;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: var(--bs-primary);
 }
 </style>
 {% endblock %}

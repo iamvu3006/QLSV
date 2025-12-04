@@ -1,11 +1,11 @@
 # teacher/views.py
-# ĐÃ XÓA teacher_dashboard - Dùng dashboard/views.py thay thế
+# FINAL VERSION: Chỉ giữ lại chức năng ĐỘC QUYỀN của teacher
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import TeacherNote
-from .forms import TeacherNoteForm, GradeUpdateForm
+from .forms import TeacherNoteForm
 from classes.models import Class
 from student.models import Student
 from grades.models import Grade
@@ -16,114 +16,46 @@ def is_teacher(user):
     return user.is_authenticated and user.role == 'teacher'
 
 
-# ❌ ĐÃ XÓA teacher_dashboard - Dùng dashboard/views.py
-# def teacher_dashboard(request):
-#     ...
+# ❌ XÓA: teacher_class_list, teacher_class_detail
+# → Dùng classes/views.py với URL /classes/
 
 
-@login_required
-@user_passes_test(is_teacher)
-def teacher_class_list(request):
-    """Danh sách lớp mà giáo viên phụ trách"""
-    teacher = request.user
-    classes = Class.objects.filter(giao_vien_chu_nhiem=teacher).prefetch_related('students')
-    return render(request, 'teacher/class_list.html', {
-        'teacher': teacher,
-        'classes': classes
-    })
-
-
-@login_required
-@user_passes_test(is_teacher)
-def teacher_class_detail(request, pk):
-    """Chi tiết lớp học và danh sách sinh viên"""
-    teacher = request.user
-    class_obj = get_object_or_404(Class, pk=pk, giao_vien_chu_nhiem=teacher)
-    students = class_obj.students.all()
-    
-    return render(request, 'teacher/class_detail.html', {
-        'teacher': teacher,
-        'class_obj': class_obj,
-        'students': students
-    })
-
+# ============================================
+# XEM ĐIỂM SINH VIÊN - View wrapper cho teacher
+# ============================================
 
 @login_required
 @user_passes_test(is_teacher)
 def teacher_student_grades(request, student_id):
-    """Xem và quản lý điểm số của một sinh viên"""
+    """
+    View wrapper: Xem điểm số của sinh viên
+    - Kiểm tra quyền truy cập
+    - Render template CHUNG từ grades/
+    """
     teacher = request.user
     student = get_object_or_404(Student, pk=student_id)
     
-    # Kiểm tra sinh viên có trong lớp mà giáo viên phụ trách không
+    # ✅ Kiểm tra sinh viên có trong lớp mình phụ trách không
     classes_managed = Class.objects.filter(giao_vien_chu_nhiem=teacher)
     if not student.classes.filter(id__in=classes_managed.values_list('id', flat=True)).exists():
         messages.error(request, "Bạn không có quyền xem điểm của sinh viên này.")
-        return redirect('teacher_dashboard')
+        return redirect('class_list')
     
+    # Lấy điểm số
     grades = Grade.objects.filter(student=student).select_related('subject').order_by('-nam_hoc', '-hoc_ky', 'subject__ma_mon')
     
-    return render(request, 'teacher/student_grades.html', {
-        'teacher': teacher,
+    # ✅ DÙNG TEMPLATE CHUNG từ grades/grade_list.html
+    return render(request, 'grades/grade_list.html', {
+        'grades': grades,
         'student': student,
-        'grades': grades
+        'is_teacher_view': True,  # Flag để template biết
+        'HOC_KY_CHOICES': Grade.HOC_KY_CHOICES,
     })
 
 
-@login_required
-@user_passes_test(is_teacher)
-def teacher_grade_update(request, pk):
-    """Cập nhật điểm số của sinh viên"""
-    teacher = request.user
-    grade = get_object_or_404(Grade, pk=pk)
-    
-    # Kiểm tra sinh viên có trong lớp mà giáo viên phụ trách không
-    classes_managed = Class.objects.filter(giao_vien_chu_nhiem=teacher)
-    if not grade.student.classes.filter(id__in=classes_managed.values_list('id', flat=True)).exists():
-        messages.error(request, "Bạn không có quyền cập nhật điểm của sinh viên này.")
-        return redirect('teacher_dashboard')
-    
-    if request.method == 'POST':
-        form = GradeUpdateForm(request.POST, instance=grade)
-        if form.is_valid():
-            grade = form.save()
-            messages.success(request, "Cập nhật điểm thành công!")
-            return redirect('teacher_student_grades', student_id=grade.student.id)
-    else:
-        form = GradeUpdateForm(instance=grade)
-    
-    return render(request, 'teacher/grade_update.html', {
-        'teacher': teacher,
-        'grade': grade,
-        'form': form
-    })
-
-
-@login_required
-@user_passes_test(is_teacher)
-def teacher_grade_delete(request, pk):
-    """Xóa điểm số"""
-    teacher = request.user
-    grade = get_object_or_404(Grade, pk=pk)
-    
-    # Kiểm tra sinh viên có trong lớp mà giáo viên phụ trách không
-    classes_managed = Class.objects.filter(giao_vien_chu_nhiem=teacher)
-    if not grade.student.classes.filter(id__in=classes_managed.values_list('id', flat=True)).exists():
-        messages.error(request, "Bạn không có quyền xóa điểm của sinh viên này.")
-        return redirect('teacher_dashboard')
-    
-    student_id = grade.student.id
-    
-    if request.method == 'POST':
-        grade.delete()
-        messages.success(request, "Xóa điểm thành công!")
-        return redirect('teacher_student_grades', student_id=student_id)
-    
-    return render(request, 'teacher/grade_confirm_delete.html', {
-        'teacher': teacher,
-        'grade': grade
-    })
-
+# ============================================
+# NHẬN XÉT SINH VIÊN - Chức năng ĐỘC QUYỀN
+# ============================================
 
 @login_required
 @user_passes_test(is_teacher)

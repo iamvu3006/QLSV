@@ -3,13 +3,32 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+    <!-- Breadcrumb (cho teacher) -->
+    {% if user.role == 'teacher' and grade %}
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'class_list' %}">
+                        <i class="fas fa-chalkboard-teacher"></i> Lớp học
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'teacher_student_grades' grade.student.pk %}">
+                        <i class="fas fa-chart-line"></i> Điểm số
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Cập nhật</li>
+            </ol>
+        </nav>
+    {% endif %}
+
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-gradient-primary text-white py-4">
                     <div class="d-flex align-items-center">
                         <div class="header-icon me-3">
-                            {% if 'Sửa' in title %}
+                            {% if 'Sửa' in title or 'Cập nhật' in title %}
                                 <i class="fas fa-edit fa-2x"></i>
                             {% else %}
                                 <i class="fas fa-plus-circle fa-2x"></i>
@@ -17,80 +36,187 @@
                         </div>
                         <div>
                             <h4 class="mb-1">{{ title }}</h4>
-                            <p class="mb-0 opacity-75">Thông tin điểm số</p>
+                            <p class="mb-0 opacity-75">
+                                {% if user.role == 'teacher' %}
+                                    Nhập điểm cho sinh viên trong lớp phụ trách
+                                {% else %}
+                                    Thông tin điểm số sinh viên
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="card-body p-5">
+                    <!-- Thông tin hiện tại (nếu đang sửa) -->
+                    {% if grade %}
+                        <div class="card border mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-info-circle me-2 text-primary"></i>Thông tin hiện tại
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="info-item">
+                                            <small class="text-muted d-block mb-1">Sinh viên:</small>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle-sm bg-primary bg-opacity-10 text-primary me-2">
+                                                    <i class="fas fa-user-graduate"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="mb-0 fw-semibold">{{ grade.student.ho_ten }}</p>
+                                                    <small class="text-muted">{{ grade.student.ma_sv }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="info-item">
+                                            <small class="text-muted d-block mb-1">Môn học:</small>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle-sm bg-info bg-opacity-10 text-info me-2">
+                                                    <i class="fas fa-book"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="mb-0 fw-semibold">{{ grade.subject.ten_mon }}</p>
+                                                    <small class="text-muted">{{ grade.subject.ma_mon }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <small class="text-muted d-block">Học kỳ:</small>
+                                        <span class="badge bg-primary">HK{{ grade.hoc_ky }}</span>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <small class="text-muted d-block">Năm học:</small>
+                                        <span class="badge bg-info">{{ grade.nam_hoc }}</span>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <small class="text-muted d-block">Điểm tổng kết:</small>
+                                        <span class="badge {% if grade.diem_tong_ket >= 5.0 %}bg-success{% else %}bg-danger{% endif %} fs-6">
+                                            {{ grade.diem_tong_ket|default:"Chưa có" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Form nhập điểm -->
+                    <h5 class="mb-4">
+                        <i class="fas fa-edit me-2 {% if grade %}text-warning{% else %}text-primary{% endif %}"></i>
+                        {% if grade %}Chỉnh sửa điểm số{% else %}Nhập điểm số mới{% endif %}
+                    </h5>
+                    
                     <form method="post" class="needs-validation" novalidate>
                         {% csrf_token %}
                         
                         <div class="row g-4">
                             {% for field in form %}
                                 <div class="col-md-{% if 'ghi_chu' in field.name %}12{% else %}6{% endif %}">
-                                    <div class="form-floating mb-3">
-                                        {{ field }}
-                                        <label for="{{ field.id_for_label }}">
-                                            <i class="fas fa-{% if 'student' in field.name %}user{% elif 'subject' in field.name %}book{% elif 'diem' in field.name %}chart-line{% elif 'hoc_ky' in field.name %}calendar-alt{% elif 'nam_hoc' in field.name %}calendar{% else %}sticky-note{% endif %} me-2"></i>
-                                            {{ field.label }}
-                                        </label>
-                                        {% if field.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="fas fa-exclamation-circle me-1"></i>
-                                                {{ field.errors }}
-                                            </div>
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                                        <i class="fas fa-{% if 'student' in field.name %}user-graduate
+                                                      {% elif 'subject' in field.name %}book
+                                                      {% elif 'diem' in field.name %}chart-line
+                                                      {% elif 'hoc_ky' in field.name %}calendar-alt
+                                                      {% elif 'nam_hoc' in field.name %}calendar
+                                                      {% else %}sticky-note{% endif %} me-2 text-primary"></i>
+                                        {{ field.label }}
+                                        {% if field.field.required %}
+                                            <span class="text-danger">*</span>
                                         {% endif %}
-                                        {% if field.help_text %}
-                                            <div class="form-text">
-                                                <i class="fas fa-info-circle me-1"></i>
-                                                {{ field.help_text }}
-                                            </div>
+                                    </label>
+                                    
+                                    <div class="{% if 'diem' in field.name %}input-group{% endif %}">
+                                        {% if 'diem' in field.name %}
+                                            <span class="input-group-text bg-light">
+                                                <i class="fas fa-percentage text-muted"></i>
+                                            </span>
+                                        {% endif %}
+                                        
+                                        {{ field }}
+                                        
+                                        {% if 'diem' in field.name %}
+                                            <span class="input-group-text bg-light">điểm</span>
                                         {% endif %}
                                     </div>
+                                    
+                                    {% if field.help_text %}
+                                        <div class="form-text text-muted mt-1">
+                                            <i class="fas fa-info-circle me-1"></i>{{ field.help_text }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if field.errors %}
+                                        <div class="alert alert-danger mt-2 py-2 small">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>{{ field.errors }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             {% endfor %}
                         </div>
                         
-                        <!-- Preview Grade Card -->
-                        <div class="card preview-card border-0 bg-light mb-4">
-                            <div class="card-body p-4">
-                                <h6 class="mb-3"><i class="fas fa-eye me-2"></i>Xem trước điểm số</h6>
-                                <div class="row">
+                        <!-- Preview điểm -->
+                        <div class="card border-dashed mt-4 mb-4">
+                            <div class="card-body">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-eye me-2 text-info"></i>Xem trước điểm số
+                                </h6>
+                                <div class="row text-center">
                                     <div class="col-md-3">
-                                        <div class="preview-item text-center p-3 rounded bg-white">
-                                            <div class="preview-label text-muted mb-1">Điểm quá trình</div>
-                                            <div class="preview-value fw-bold fs-4 text-primary">-</div>
+                                        <div class="preview-item">
+                                            <small class="text-muted d-block mb-2">Điểm quá trình</small>
+                                            <div class="preview-value text-primary" id="preview-qt">
+                                                {% if grade %}{{ grade.diem_qua_trinh|default:"-" }}{% else %}-{% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="preview-item text-center p-3 rounded bg-white">
-                                            <div class="preview-label text-muted mb-1">Điểm giữa kỳ</div>
-                                            <div class="preview-value fw-bold fs-4 text-warning">-</div>
+                                        <div class="preview-item">
+                                            <small class="text-muted d-block mb-2">Điểm giữa kỳ</small>
+                                            <div class="preview-value text-warning" id="preview-gk">
+                                                {% if grade %}{{ grade.diem_giua_ky|default:"-" }}{% else %}-{% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="preview-item text-center p-3 rounded bg-white">
-                                            <div class="preview-label text-muted mb-1">Điểm cuối kỳ</div>
-                                            <div class="preview-value fw-bold fs-4 text-danger">-</div>
+                                        <div class="preview-item">
+                                            <small class="text-muted d-block mb-2">Điểm cuối kỳ</small>
+                                            <div class="preview-value text-danger" id="preview-ck">
+                                                {% if grade %}{{ grade.diem_cuoi_ky|default:"-" }}{% else %}-{% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="preview-item text-center p-3 rounded bg-white">
-                                            <div class="preview-label text-muted mb-1">Điểm tổng kết</div>
-                                            <div class="preview-value fw-bold fs-4 text-success">-</div>
+                                        <div class="preview-item highlight">
+                                            <small class="text-muted d-block mb-2">Điểm tổng kết</small>
+                                            <div class="preview-value text-success fw-bold fs-4" id="preview-total">
+                                                {% if grade %}{{ grade.diem_tong_ket|default:"-" }}{% else %}-{% endif %}
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="calculateGrade()">
+                                        <i class="fas fa-calculator me-1"></i>Tính điểm tự động
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-5 pt-4 border-top">
-                            <a href="{% url 'grade_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                        <!-- Action buttons -->
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                            <a href="{% if user.role == 'teacher' and grade %}{% url 'teacher_student_grades' grade.student.pk %}{% else %}{% url 'grade_list' %}{% endif %}" 
+                               class="btn btn-outline-secondary btn-lg px-4">
                                 <i class="fas fa-times me-2"></i>Hủy bỏ
                             </a>
-                            <button type="submit" class="btn btn-primary btn-lg px-4">
-                                {% if 'Sửa' in title %}
+                            <button type="submit" class="btn {% if grade %}btn-warning{% else %}btn-primary{% endif %} btn-lg px-4">
+                                {% if grade %}
                                     <i class="fas fa-save me-2"></i>Cập nhật điểm
                                 {% else %}
                                     <i class="fas fa-check me-2"></i>Lưu điểm
@@ -98,6 +224,23 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+            
+            <!-- Hướng dẫn chấm điểm -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-lightbulb text-warning fa-lg"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <small class="text-muted">
+                                <strong>Lưu ý:</strong> Điểm số phải nằm trong khoảng 0-10. 
+                                Điểm tổng kết = (Quá trình × 20%) + (Giữa kỳ × 30%) + (Cuối kỳ × 50%)
+                            </small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,53 +267,65 @@
     justify-content: center;
 }
 
-.form-floating {
-    position: relative;
+.avatar-circle-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.form-floating > .form-control,
-.form-floating > .form-select {
-    height: 60px;
-    padding: 20px 15px 5px;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    transition: all 0.3s;
+.info-item {
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: #f8f9fa;
 }
 
-.form-floating > textarea.form-control {
-    height: 100px;
-    padding-top: 30px;
-}
-
-.form-floating > label {
-    padding: 20px 15px;
-    color: #6c757d;
-}
-
-.form-floating > .form-control:focus,
-.form-floating > .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-}
-
-.form-floating > .form-control:focus ~ label,
-.form-floating > .form-select:focus ~ label {
-    color: #667eea;
-}
-
-.preview-card {
+.border-dashed {
+    border: 2px dashed #dee2e6;
     border-radius: 12px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .preview-item {
-    border: 2px solid #dee2e6;
+    padding: 1rem;
+    border-radius: 8px;
     transition: all 0.3s;
 }
 
+.preview-item.highlight {
+    background: #f8f9fa;
+}
+
 .preview-item:hover {
+    background: #e9ecef;
+}
+
+.preview-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
     border-color: #667eea;
-    transform: translateY(-2px);
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.1);
+}
+
+.input-group-text {
+    border: 2px solid #e9ecef;
+    border-right: 0;
+}
+
+.input-group .form-control {
+    border-left: 0;
 }
 
 .btn-lg {
@@ -178,14 +333,94 @@
     border-radius: 10px;
     font-weight: 500;
 }
+
+.shadow-lg {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.75rem 0;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: var(--bs-primary);
+}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Thêm class form-control tự động
     const formFields = document.querySelectorAll('.form-floating select, .form-floating input, .form-floating textarea');
     formFields.forEach(field => {
-        field.classList.add('form-control');
+        if (!field.classList.contains('form-control') && !field.classList.contains('form-select')) {
+            field.classList.add('form-control');
+        }
+    });
+    
+    // Cập nhật preview khi nhập điểm
+    const diemQtInput = document.querySelector('[name="diem_qua_trinh"]');
+    const diemGkInput = document.querySelector('[name="diem_giua_ky"]');
+    const diemCkInput = document.querySelector('[name="diem_cuoi_ky"]');
+    
+    const previewQt = document.getElementById('preview-qt');
+    const previewGk = document.getElementById('preview-gk');
+    const previewCk = document.getElementById('preview-ck');
+    const previewTotal = document.getElementById('preview-total');
+    
+    function updatePreview(input, previewElement) {
+        if (input) {
+            input.addEventListener('input', function() {
+                const value = this.value;
+                previewElement.textContent = value || '-';
+                
+                // Tính điểm tổng kết tự động
+                calculateGrade();
+            });
+        }
+    }
+    
+    updatePreview(diemQtInput, previewQt);
+    updatePreview(diemGkInput, previewGk);
+    updatePreview(diemCkInput, previewCk);
+    
+    // Validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
     });
 });
+
+// Hàm tính điểm tổng kết
+function calculateGrade() {
+    const qt = parseFloat(document.querySelector('[name="diem_qua_trinh"]')?.value) || 0;
+    const gk = parseFloat(document.querySelector('[name="diem_giua_ky"]')?.value) || 0;
+    const ck = parseFloat(document.querySelector('[name="diem_cuoi_ky"]')?.value) || 0;
+    
+    if (ck > 0) {
+        const total = (qt * 0.2) + (gk * 0.3) + (ck * 0.5);
+        const previewTotal = document.getElementById('preview-total');
+        previewTotal.textContent = total.toFixed(2);
+        
+        // Đổi màu dựa trên điểm
+        previewTotal.className = 'preview-value fw-bold fs-4';
+        if (total >= 8.5) {
+            previewTotal.classList.add('text-success');
+        } else if (total >= 7.0) {
+            previewTotal.classList.add('text-info');
+        } else if (total >= 5.0) {
+            previewTotal.classList.add('text-warning');
+        } else {
+            previewTotal.classList.add('text-danger');
+        }
+    }
+}
 </script>
 {% endblock %}
