@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %}Quản lý giáo viên{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title mb-1">
+                <i class="fas fa-chalkboard-teacher me-2"></i>Quản lý giáo viên
+            </h2>
+            <p class="text-muted">Danh sách giáo viên trong hệ thống</p>
+        </div>
+        <a href="{% url 'admin_teacher_create' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-user-plus me-2"></i>Thêm giáo viên
+        </a>
+    </div>
+
+    <!-- Search -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-10">
+                    <label class="form-label fw-bold">Tìm kiếm giáo viên</label>
+                    <input type="text" name="q" class="form-control form-control-lg" 
+                           value="{{ query }}" placeholder="Tên, email, username...">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-search me-2"></i>Tìm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Teachers Grid -->
+    {% if teachers %}
+    <div class="row g-4">
+        {% for teacher in teachers %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card teacher-card h-100 shadow border-0 hover-lift">
+                <div class="card-header bg-gradient-success text-white py-3 text-center">
+                    <div class="avatar-circle-lg mx-auto mb-2">
+                        <i class="fas fa-user-tie fa-2x"></i>
+                    </div>
+                    <h5 class="mb-1">{{ teacher.get_full_name|default:teacher.username }}</h5>
+                    <small class="opacity-75">@{{ teacher.username }}</small>
+                </div>
+                <div class="card-body">
+                    <div class="info-item mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope me-3 text-success"></i>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block">Email</small>
+                                <span class="fw-medium">{{ teacher.email }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-calendar me-3 text-info"></i>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block">Ngày tạo</small>
+                                <span class="fw-medium">{{ teacher.date_joined|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Trạng thái</span>
+                            {% if teacher.is_active %}
+                                <span class="badge bg-success rounded-pill">
+                                    <i class="fas fa-check-circle me-1"></i>Hoạt động
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary rounded-pill">
+                                    <i class="fas fa-lock me-1"></i>Đã khóa
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'admin_teacher_update' teacher.pk %}" 
+                           class="btn btn-outline-warning btn-sm flex-grow-1">
+                            <i class="fas fa-edit me-1"></i>Sửa
+                        </a>
+                        <a href="{% url 'admin_reset_password' teacher.pk %}" 
+                           class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-key"></i>
+                        </a>
+                        <a href="{% url 'admin_teacher_delete' teacher.pk %}" 
+                           class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Summary -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fas fa-users me-2 text-success"></i>
+                            Tổng số: <strong>{{ teachers.count }}</strong> giáo viên
+                        </span>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-download me-1"></i>Xuất danh sách
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card border-dashed">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-chalkboard-teacher fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted">Chưa có giáo viên nào</h5>
+            <p class="text-muted mb-4">Thêm giáo viên đầu tiên vào hệ thống</p>
+            <a href="{% url 'admin_teacher_create' %}" class="btn btn-success btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Thêm giáo viên đầu tiên
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.teacher-card {
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.avatar-circle-lg {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.border-dashed {
+    border: 2px dashed #dee2e6;
+    border-radius: 15px;
+}
+</style>
+{% endblock %}

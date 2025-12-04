@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon me-3">
+                            <i class="fas {% if user_obj %}fa-user-edit{% else %}fa-user-plus{% endif %} fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1">{{ title }}</h4>
+                            <p class="mb-0 opacity-75">Quản lý tài khoản hệ thống</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body p-5">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            {% for field in form %}
+                                {% if field.name != 'is_active' and field.name != 'is_staff' %}
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        {{ field }}
+                                        <label for="{{ field.id_for_label }}">
+                                            <i class="fas fa-{% if 'username' in field.name %}user{% elif 'email' in field.name %}envelope{% elif 'password' in field.name %}lock{% elif 'name' in field.name %}id-card{% else %}user-tag{% endif %} me-2"></i>
+                                            {{ field.label }}
+                                        </label>
+                                        {% if field.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                        {% if field.help_text %}
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                {{ field.help_text }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <!-- Checkboxes -->
+                            {% if form.is_active or form.is_staff %}
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="mb-3"><i class="fas fa-cog me-2"></i>Cài đặt nâng cao</h6>
+                                        {% if form.is_active %}
+                                        <div class="form-check form-switch mb-2">
+                                            {{ form.is_active }}
+                                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                                <strong>{{ form.is_active.label }}</strong> - Cho phép đăng nhập
+                                            </label>
+                                        </div>
+                                        {% endif %}
+                                        {% if form.is_staff %}
+                                        <div class="form-check form-switch">
+                                            {{ form.is_staff }}
+                                            <label class="form-check-label" for="{{ form.is_staff.id_for_label }}">
+                                                <strong>{{ form.is_staff.label }}</strong> - Truy cập Admin site
+                                            </label>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-5 pt-4 border-top">
+                            <a href="{% url 'admin_user_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-times me-2"></i>Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-save me-2"></i>
+                                {% if user_obj %}Cập nhật{% else %}Tạo tài khoản{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.header-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: 60px;
+    padding: 20px 15px 5px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.form-floating > label {
+    padding: 20px 15px;
+    color: #6c757d;
+}
+
+.form-check-input {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formFields = document.querySelectorAll('.form-floating select, .form-floating input');
+    formFields.forEach(field => {
+        if (!field.classList.contains('form-check-input')) {
+            field.classList.add('form-control');
+        }
+    });
+});
+</script>
+{% endblock %}
