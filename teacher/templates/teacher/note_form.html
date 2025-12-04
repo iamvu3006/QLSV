@@ -5,29 +5,31 @@
 <div class="row justify-content-center">
     <div class="col-xl-8 col-lg-10">
         <div class="card border-0 shadow-lg">
-            <div class="card-header bg-gradient-primary text-white py-3">
+            <!-- Thay đổi header để dễ đọc hơn -->
+            <div class="card-header bg-light border-bottom py-4">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <div class="avatar-circle-sm bg-white bg-opacity-20 me-3">
+                        <div class="avatar-circle-sm bg-primary text-white me-3">
                             {% if 'create' in request.path %}
-                                <i class="fas fa-plus text-white"></i>
+                                <i class="fas fa-plus"></i>
                             {% else %}
-                                <i class="fas fa-edit text-white"></i>
+                                <i class="fas fa-edit"></i>
                             {% endif %}
                         </div>
                     </div>
                     <div class="flex-grow-1">
-                        <h4 class="mb-0">{{ title }}</h4>
-                        <small class="opacity-75">
+                        <h4 class="mb-1 text-dark">{{ title }}</h4>
+                        <p class="mb-0 text-muted">
                             {% if 'create' in request.path %}
-                                Thêm nhận xét mới cho sinh viên
+                                <i class="fas fa-info-circle me-1 text-primary"></i>Thêm nhận xét mới cho sinh viên
                             {% else %}
-                                Chỉnh sửa nhận xét hiện có
+                                <i class="fas fa-info-circle me-1 text-primary"></i>Chỉnh sửa nhận xét hiện có
                             {% endif %}
-                        </small>
+                        </p>
                     </div>
                 </div>
             </div>
+            
             <div class="card-body p-4">
                 <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
@@ -64,7 +66,7 @@
                         </div>
                     {% endfor %}
                     
-                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
                         <a href="{% url 'teacher_note_list' %}" class="btn btn-outline-secondary px-4">
                             <i class="fas fa-arrow-left me-2"></i>Quay lại
                         </a>
@@ -125,6 +127,16 @@
     
     .shadow-lg {
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    .avatar-circle-sm {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
     }
 </style>
 

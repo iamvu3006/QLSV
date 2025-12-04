@@ -1,9 +1,9 @@
 from django import forms
 from .models import Class
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
-User = settings.AUTH_USER_MODEL
-
+User = get_user_model() # Lấy model User tùy chỉnh nếu có
 
 class ClassForm(forms.ModelForm):
     """Form để tạo và cập nhật lớp học"""
@@ -22,4 +22,3 @@ class ClassForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Chỉ hiển thị giáo viên trong dropdown
         self.fields['giao_vien_chu_nhiem'].queryset = User.objects.filter(role='teacher')
-
