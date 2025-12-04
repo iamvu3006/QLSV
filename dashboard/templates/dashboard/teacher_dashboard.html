@@ -111,82 +111,6 @@
     </div>
 </div>
 
-<!-- Sinh viên cần quan tâm -->
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">🏆 Top 5 sinh viên xuất sắc</h5>
-            </div>
-            <div class="card-body">
-                {% if top_students %}
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Mã SV</th>
-                                <th>Họ tên</th>
-                                <th>GPA</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for student in top_students %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ student.student.ma_sv }}</td>
-                                    <td>{{ student.student.ho_ten }}</td>
-                                    <td><strong class="text-success">{{ student.gpa }}</strong></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p class="text-muted">Chưa có dữ liệu GPA.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">⚠️ Sinh viên cần quan tâm (GPA < 2.0)</h5>
-            </div>
-            <div class="card-body">
-                {% if low_gpa_students %}
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Mã SV</th>
-                                <th>Họ tên</th>
-                                <th>GPA</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for student in low_gpa_students %}
-                                <tr>
-                                    <td>{{ student.student.ma_sv }}</td>
-                                    <td>{{ student.student.ho_ten }}</td>
-                                    <td><strong class="text-danger">{{ student.gpa }}</strong></td>
-                                    <td>
-                                        <a href="{% url 'teacher_student_grades' student.student.pk %}" 
-                                           class="btn btn-sm btn-info">Xem</a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="alert alert-success">
-                        <i class="bi bi-check-circle"></i> Không có sinh viên nào cần quan tâm đặc biệt!
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Nhận xét gần đây -->
 <div class="row mb-4">
     <div class="col-md-12">
@@ -251,12 +175,6 @@
                         <a href="{% url 'teacher_note_create' %}" class="btn btn-outline-warning btn-lg w-100">
                             <i class="bi bi-chat-left-text"></i><br>
                             Thêm nhận xét
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <a href="{% url 'subject_list' %}" class="btn btn-outline-info btn-lg w-100">
-                            <i class="bi bi-book"></i><br>
-                            Môn học
                         </a>
                     </div>
                 </div>

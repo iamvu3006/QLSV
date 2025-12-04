@@ -58,7 +58,7 @@
                                                       {% elif current_gpa.gpa >= 5.5 %}bg-warning
                                                       {% elif current_gpa.gpa >= 4.0 %}bg-secondary
                                                       {% else %}bg-danger{% endif %} fs-5 rounded-pill px-3 py-2">
-                                        {{ current_gpa.get_rating_display|default:"Chưa xếp loại" }}
+                                        {{ current_gpa_rating|default:"Chưa xếp loại" }}
                                     </span>
                                 {% endif %}
                             </div>
@@ -239,75 +239,6 @@
                     <div class="text-center py-4">
                         <i class="fas fa-chart-line fa-3x text-muted opacity-25 mb-3"></i>
                         <p class="text-muted">Chưa có lịch sử GPA</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- Classes -->
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header bg-warning bg-gradient text-dark py-3 rounded-top-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="fas fa-school me-2"></i>🏫 Các lớp học
-                    </h5>
-                    <span class="badge bg-dark text-white rounded-pill px-3 py-1">
-                        {{ classes|length }} lớp
-                    </span>
-                </div>
-            </div>
-            <div class="card-body">
-                {% if classes %}
-                    <div class="row g-3">
-                        {% for class_obj in classes %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card border h-100 hover-shadow transition-all">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <h6 class="fw-bold text-primary mb-1">{{ class_obj.ma_lop }}</h6>
-                                                <h5 class="card-title mb-2">{{ class_obj.ten_lop }}</h5>
-                                            </div>
-                                            <span class="badge bg-warning text-dark rounded-pill px-3 py-1">
-                                                {{ class_obj.nam_hoc }}
-                                            </span>
-                                        </div>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="avatar-circle bg-primary bg-opacity-10 text-primary me-3">
-                                                <i class="fas fa-chalkboard-teacher"></i>
-                                            </div>
-                                            <div>
-                                                <p class="mb-0 fw-semibold">Giáo viên chủ nhiệm</p>
-                                                <p class="mb-0 text-muted">
-                                                    {{ class_obj.giao_vien_chu_nhiem.get_full_name|default:class_obj.giao_vien_chu_nhiem.username }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="mt-3">
-                                            <span class="badge bg-light text-dark border me-2 px-3 py-1">
-                                                <i class="fas fa-users me-1"></i> {{ class_obj.si_so|default:"0" }} SV
-                                            </span>
-                                            <span class="badge bg-light text-dark border px-3 py-1">
-                                                <i class="fas fa-book me-1"></i> {{ class_obj.so_mon|default:"0" }} môn
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-transparent border-top-0">
-                                        <a href="#" class="btn btn-outline-primary btn-sm w-100">
-                                            <i class="fas fa-eye me-1"></i> Xem chi tiết
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-school fa-3x text-muted opacity-25 mb-3"></i>
-                        <p class="text-muted">Bạn chưa thuộc lớp nào</p>
-                        <button class="btn btn-outline-warning">
-                            <i class="fas fa-plus me-1"></i> Tham gia lớp học
-                        </button>
                     </div>
                 {% endif %}
             </div>

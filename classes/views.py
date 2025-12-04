@@ -58,10 +58,19 @@ def class_list(request):
     """
     # ✅ Tự động lọc theo role
     classes = get_classes_for_user(request.user).prefetch_related('students', 'giao_vien_chu_nhiem')
-    
+
+    # Tính tổng số sinh viên phù hợp với role:
+    # - Admin: tổng số sinh viên trong hệ thống
+    # - Teacher: tổng số sinh viên mà giáo viên đó đang phụ trách (distinct)
+    if request.user.role == 'teacher':
+        total_students = Student.objects.filter(classes__giao_vien_chu_nhiem=request.user).distinct().count()
+    else:
+        total_students = Student.objects.count()
+
     return render(request, 'classes/class_list.html', {
         'classes': classes,
         'user_role': request.user.role,  # Để template biết role
+        'total_students': total_students,
     })
 
 

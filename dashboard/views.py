@@ -137,7 +137,7 @@ def dashboard_view(request):
         
         # Dữ liệu biểu đồ
         'grade_distribution': grade_distribution,
-        'classes_stats': json.dumps(classes_stats),
+        'classes_stats': classes_stats,
         
         # Filter options
         'HOC_KY_CHOICES': Grade.HOC_KY_CHOICES,
@@ -245,6 +245,27 @@ def student_dashboard_view(request):
         )
     except StudentGPA.DoesNotExist:
         current_gpa = None
+
+    # Tính xếp loại học tập (string) và class cho badge dựa trên thang điểm 10
+    current_gpa_rating = None
+    current_gpa_rating_class = None
+    if current_gpa and current_gpa.gpa is not None:
+        g = current_gpa.gpa
+        if g >= 8.5:
+            current_gpa_rating = 'Giỏi'
+            current_gpa_rating_class = 'bg-success'
+        elif g >= 7.0:
+            current_gpa_rating = 'Khá'
+            current_gpa_rating_class = 'bg-primary'
+        elif g >= 5.5:
+            current_gpa_rating = 'Trung bình'
+            current_gpa_rating_class = 'bg-warning'
+        elif g >= 4.0:
+            current_gpa_rating = 'Kém'
+            current_gpa_rating_class = 'bg-secondary'
+        else:
+            current_gpa_rating = 'Yếu'
+            current_gpa_rating_class = 'bg-danger'
     
     # Lấy điểm các môn học kỳ hiện tại
     current_grades = Grade.objects.filter(
@@ -269,6 +290,8 @@ def student_dashboard_view(request):
         'gpa_history': gpa_history,
         'current_semester': current_semester,
         'current_year': current_year,
+        'current_gpa_rating': current_gpa_rating,
+        'current_gpa_rating_class': current_gpa_rating_class,
     }
     
     return render(request, 'dashboard/student_dashboard.html', context)
