@@ -228,7 +228,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 {% if user.is_authenticated %}
-                    {% if user.role == 'admin'%}
+                    {% if user.role == 'admin' %}
+                        <!-- ADMIN MENU -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-tachometer-alt me-1"></i> Quản trị
@@ -267,27 +268,35 @@
                                 <i class="fas fa-clipboard-check me-1"></i> Điểm số
                             </a>
                         </li>
-                    {% endif %}
-                    
-                    {% if user.role == 'teacher' %}
+                    {% elif user.role == 'teacher' %}
+                        <!-- TEACHER MENU - ✅ FIXED -->
                         <li class="nav-item">
                             <a href="{% url 'teacher_dashboard' %}" class="nav-link">
-                                <i class="fas fa-chalkboard-teacher me-1"></i> Dashboard
+                                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'teacher_class_list' %}" class="nav-link">
+                            <a href="{% url 'class_list' %}" class="nav-link">
                                 <i class="fas fa-school me-1"></i> Lớp học
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'teacher_note_list' %}" class="nav-link">
-                                💬 Nhận xét
+                            <a href="{% url 'subject_list' %}" class="nav-link">
+                                <i class="fas fa-book me-1"></i> Môn học
                             </a>
                         </li>
-                    {% endif %}
-                    
-                    {% if user.role == 'student' %}
+                        <li class="nav-item">
+                            <a href="{% url 'grade_list' %}" class="nav-link">
+                                <i class="fas fa-clipboard-check me-1"></i> Điểm số
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'teacher_note_list' %}" class="nav-link">
+                                <i class="fas fa-comments me-1"></i> Nhận xét
+                            </a>
+                        </li>
+                    {% elif user.role == 'student' %}
+                        <!-- STUDENT MENU -->
                         <li class="nav-item">
                             <a href="{% url 'student_dashboard' %}" class="nav-link">
                                 <i class="fas fa-tachometer-alt me-1"></i> Dashboard
@@ -312,16 +321,30 @@
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-2"></i>
                             <span>{{ user.username }}</span>
+                            <span class="badge bg-light text-dark ms-2">{{ user.get_role_display }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i> Thông tin cá nhân</a></li>
+                            <li><h6 class="dropdown-header">
+                                <i class="fas fa-user me-2"></i>{{ user.username }}
+                            </h6></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                <i class="fas fa-id-card me-2"></i> Thông tin cá nhân
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-cog me-2"></i> Cài đặt
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                            </a></li>
                         </ul>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt me-1"></i> Đăng nhập</a>
+                        <a href="{% url 'login' %}" class="nav-link">
+                            <i class="fas fa-sign-in-alt me-1"></i> Đăng nhập
+                        </a>
                     </li>
                 {% endif %}
             </ul>
