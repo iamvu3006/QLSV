@@ -1,5 +1,5 @@
 # dashboard/views.py
-
+from django.contrib import messages
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Avg, Count, Q
@@ -220,7 +220,17 @@ def student_dashboard_view(request):
     try:
         student = Student.objects.get(user=request.user)
     except Student.DoesNotExist:
-        return render(request, 'dashboard/no_student_profile.html')
+        # ✅ TẠO STUDENT TỰ ĐỘNG NẾU CHƯA CÓ
+        from datetime import date
+        student = Student.objects.create(
+            user=request.user,
+            ma_sv=request.user.username,
+            ho_ten=request.user.get_full_name() or request.user.username,
+            ngay_sinh=date(2000, 1, 1),
+            lop='Chưa phân lớp',
+            email=request.user.email
+        )
+        messages.info(request, "Hồ sơ sinh viên đã được tạo. Vui lòng cập nhật thông tin đầy đủ.")
     
     # Lấy học kỳ hiện tại
     current_semester = '1'

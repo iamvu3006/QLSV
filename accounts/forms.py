@@ -30,6 +30,30 @@ class AdminUserCreationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({'class': 'form-control'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+    
+    # ✅ THÊM PHƯƠNG THỨC save() ĐỂ TỰ ĐỘNG TẠO STUDENT
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        
+        # Tự động tạo Student nếu role là student
+        if commit and user.role == 'student':
+            from student.models import Student
+            from datetime import date
+            
+            # Kiểm tra xem đã có Student chưa
+            if not hasattr(user, 'student'):
+                Student.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'ma_sv': user.username,  # Dùng username làm mã SV
+                        'ho_ten': user.get_full_name() or user.username,
+                        'ngay_sinh': date(2000, 1, 1),  # Ngày sinh mặc định
+                        'lop': 'Chưa phân lớp',
+                        'email': user.email
+                    }
+                )
+        
+        return user
 
 
 class AdminUserUpdateForm(UserChangeForm):
